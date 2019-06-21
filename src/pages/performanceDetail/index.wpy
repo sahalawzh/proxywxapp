@@ -1,0 +1,64 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-visit">
+    <view class="visit-detail">
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">本月业绩任务</view>
+        <view class="font-size--28">测试</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">业务员</view>
+        <view class="font-size--28">15521054017</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">联系电话</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">本月业绩</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">全部业绩</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">本月提成</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">最后进货时间</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">代理商数量</view>
+        <view class="font-size--28">北京市回龙观</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class PerformanceDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '业绩报表详情'
+    }
+    data = {
+      uploadImgs: []
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/agentVisit/index.postcss';
+</style>

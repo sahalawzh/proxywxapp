@@ -1,0 +1,64 @@
+.page-stockDetail {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F3F4F5;
+  .stock-detail {
+    &__content {
+      margin-top: 20rpx;
+      padding: 0 24rpx;
+      background-color: #fff;
+      .item {
+        position: relative;
+        height: 90rpx;
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 1rpx;
+          transform: scaleY(0.5);
+          background-color: #EDEDED;
+        }
+        .label {
+          color: 333;
+        }
+        .value {
+          color: #666;
+        }
+      }
+    }
+    &__status {
+      margin-top: 20rpx;
+      padding: 0 24rpx;
+      background-color: #fff;
+      .item {
+        height: 88rpx;
+        .label {
+          color: 333;
+        }
+      }
+    }
+    &_images {
+      position: relative;
+      margin-top: 76rpx;
+      padding: 30rpx 24rpx;
+      background-color: #fff;
+      .img {
+        padding-left: 162rpx;
+        width: 376rpx;
+        height: 205rpx;
+        margin-left: 35rpx;
+        margin-bottom: 30rpx;
+      }
+      .label {
+        position: absolute;
+        left: 24rpx;
+        color: 333;
+      }
+    }
+  }
+}

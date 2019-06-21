@@ -1,0 +1,36 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-wallet">
+    <view class="wallet-detail font-size--30"><text class="title">明细</text></view>
+    <view class="wallet-content proxy-flex is-align-middle">
+      <image mode="aspectFill" class="icon-qian" src="../../images/icon-qian.png"/>
+      <view class="wallet-content__price"><text class="font-size--48 unit">￥</text>999.00</view>
+      <button class="font-size--32 wallet-btn wallet-btn__recharge" type="primary">充值</button>
+      <button class="font-size--32 open-type-btn wallet-btn wallet-btn__withdraw">提现</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class register extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/wallet/index.postcss';
+</style>

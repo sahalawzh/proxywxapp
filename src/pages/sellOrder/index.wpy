@@ -1,0 +1,118 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellOrder">
+    <view class="sellOrder-products">
+      <viewl class="sellOrder-products__item proxy-flex" wx:for="{{orderGoods}}" wx:key="index">
+        <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
+        <view class="product-content">
+          <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+          <view class="font-size--42 price">{{ item.price }}</view>
+          <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
+            <view>{{ item.specifications }}</view>
+            <view>x{{ item.number }}</view>
+          </view>
+        </view>
+      </viewl>
+    </view>
+
+    <view class="sellOrder-list">
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单号</view>
+        <view class="value font-size--28">{{ order.orderSn }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单积分</view>
+        <view class="value font-size--28">{{ order.requiredIntegral }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">制单日期</view>
+        <view class="value font-size--28">{{ order.addTime }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">制单人</view>
+        <view class="value font-size--28">{{ order.consignee }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单状态</view>
+        <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
+      </view>
+    </view>
+
+    <view class="sellOrder-info font-size--32">
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>地址:</view>
+        <view class="value">{{ order.address }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>备注:</view>
+        <view class="value">{{ order.message }}</view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import orderApis from '../../api/order'
+  export default class SellOrder extends wepy.page {
+    config = {
+      navigationBarTitleText: '销售订单',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
+    }
+    data = {
+      id: '',
+      status: {
+        0: '全部订单',
+        101: '未付款',
+        102: '已取消',
+        103: '已取消(系统)',
+        201: '已付款',
+        202: '订单取消,退款中',
+        203: '已退款',
+        301: '已发货',
+        401: '已收货',
+        402: '已收货(系统)',
+        501: '已核销'
+      },
+      order: '',
+      orderGoods: []
+    }
+    async getSellDetail () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          id: this.id
+        }
+        const { data } = await orderApis.detail(opts)
+        const { order, orderGoods } = data
+        this.order = order
+        this.orderGoods = orderGoods
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad ({ id }) {
+      this.id = id
+      this.getSellDetail()
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/sellOrder/index.postcss';
+</style>

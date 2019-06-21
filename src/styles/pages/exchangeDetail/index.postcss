@@ -1,0 +1,47 @@
+.page-exchangeDetail {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F3F4F5;
+  .content {
+    background-color: #fff;
+    margin-top: 20rpx;
+    padding: 0 30rpx 0 27rpx;
+    &-title {
+      position: relative;
+      height: 100rpx;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1rpx;
+        transform: scaleY(0.5);
+        background-color: #EDEDED;
+      }
+    }
+    &-list {
+      padding: 36rpx 0 46rpx;
+      &__item {
+        margin-bottom: 20rpx;
+        color: #666;
+      }
+      &__total {
+        padding-top: 20rpx;
+        .label {
+          color: #000;
+        }
+        .value {
+          color: #E7352F;
+        }
+        .unit {
+          color: #333;
+          margin-left: 6rpx;
+        }
+      }
+    }
+  }
+}

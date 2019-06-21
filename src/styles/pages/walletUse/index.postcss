@@ -1,0 +1,56 @@
+.page-walletUse {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F3F4F5;
+  padding-top: 20rpx;
+  .walletUse-wrap {
+    background-color: #fff;
+    border-radius:10rpx;
+    padding: 60rpx 34rpx 56rpx 36rpx;
+    .title {
+      color: #000;
+      padding-bottom: 30rpx;
+    }
+    .amount {
+      position: relative;
+      color: #000;
+      padding-bottom: 14rpx;
+      &::before {
+        position: absolute;
+        content: "";
+        height: 1rpx;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        transform: scaleY(0.5);
+        background-color: #ededed;
+      }
+      &-unit {
+        font-size: 64rpx;
+        padding-right: 54rpx;
+      }
+      &-price {
+        font-size: 80rpx;
+        height: 100%;
+      }
+    }
+    .tip {
+      color: #666;
+      padding-top: 20rpx;
+      &-tag {
+        color: #E51E17;
+      }
+    }
+    .wallet-btn {
+      width: 280rpx;
+      height: 68rpx;
+      line-height: 68rpx;
+      border-radius: 15rpx;
+      background:rgba(6,192,98,1);
+      margin: 48rpx auto 0;
+    }
+  }
+}

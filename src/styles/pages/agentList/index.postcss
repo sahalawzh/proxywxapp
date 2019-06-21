@@ -1,0 +1,61 @@
+.page-visit {
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #F3F4F5;
+  padding-top: 20rpx;
+  .visit-list {
+    padding: 0 30rpx;
+    background-color: #fff;
+    &__item {
+      position: relative;
+      padding: 22rpx 0;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 1rpx;
+        transform: scaleY(0.5);
+        background-color: #EDEDED;
+      }
+      .visit-icon {
+        width: 157rpx;
+        height: 143rpx;
+        margin-right: 36rpx;
+      }
+      .content {
+        position: relative;
+        flex: 1;
+        overflow: hidden;
+        &-title {
+          margin-top: 24rpx;
+          color: #333;
+        }
+        &-desc {
+          margin-top: 16rpx;
+          color: #2B66F6;
+        }
+        .arrow-box {
+          position: absolute;
+          right: 0;
+          top: 44%;
+          color: #999;
+          .arrow-icon {
+            width: 34rpx;
+            height: 34rpx;
+            padding-left: 4rpx;
+          }
+        }
+      }
+    }
+  }
+  .visit-empty {
+    text-align: center;
+    color: #373737;
+    margin-top: 60rpx;
+  }
+}

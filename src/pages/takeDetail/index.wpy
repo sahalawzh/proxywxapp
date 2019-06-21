@@ -1,0 +1,79 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-takeDetail">
+    <view class="take-detail">
+      <view class="take-detail__content">
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">仓库</view>
+          <view class="font-size--28 value">{{ detail.storehouseName }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">货物名称</view>
+          <view class="font-size--28 value">{{ detail.goodsName }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">库存数量</view>
+          <view class="font-size--28 value">{{ detail.sSum }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">盘点数量</view>
+          <view class="font-size--28 value">{{ detail.mSum }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">备注</view>
+          <view class="font-size--28 value">{{ detail.info }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">盘点开始时间</view>
+          <view class="font-size--28 value">{{ detail.startTime }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">盘点结束时间</view>
+          <view class="font-size--28 value">{{ detail.endTime }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">盘点人</view>
+          <view class="font-size--28 value">{{ detail.mUserName }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">状态</view>
+          <view class="font-size--28 value">{{ detail.status === 0 ? '开始' : '结束' }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class TakeDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '盘点详情'
+    }
+    data = {
+      detail: ''
+    }
+    onLoad () {
+      wx.getStorage({
+        key: 'takeDetail',
+        success: (res) => {
+          this.detail = res.data
+        }
+      })
+    }
+    methods = {
+    }
+    onUnload () {
+      wx.removeStorage({
+        key: 'takeDetail'
+      })
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/takeDetail/index.postcss';
+</style>

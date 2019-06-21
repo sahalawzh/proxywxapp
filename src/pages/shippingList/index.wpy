@@ -1,0 +1,174 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellList">
+    
+    <search></search>
+
+    <view class="sellList-wrap">
+
+      <view class="sellList-wrap__tabs proxy-flex is-align-middle font-size--30">
+        <view class="tab-plane" @tap.stop="hanldeToTab">
+          <text class="tab-plane__label">下单时间</text>
+          <text class="arrow-box">
+            <text class="arrow-box__up arrow {{ order === 'desc' ? 'active' : '' }}"></text>
+            <text class="arrow-box__down arrow {{ order === 'asc' ? 'active' : '' }}"></text>
+          </text>
+        </view>
+        <view class="tab-plane">
+          <picker bindchange="bindPickerChange" value="{{index}}" range="{{orderStatus}}">
+            <view class="tab-plane__item proxy-flex is-align-middle">
+              <text class="tab-plane__label font-size--30">{{orderStatus[index]}}</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up arrow"></text>
+                <text class="arrow-box__down arrow"></text>
+              </text>
+            </view>
+          </picker>
+        </view>
+      </view>
+
+      <view class="table">
+        <view class="table-tr table-thead proxy-flex is-align-middle">
+          <view class="table-tr__col table-thead__th">订单号</view>
+          <view class="table-tr__col table-thead__th">商品种类</view>
+          <view class="table-tr__col table-thead__th">下单时间</view>
+          <view class="table-tr__col table-thead__th">订单状态</view>
+        </view>
+        <block wx:if="{{tableData.length}}">
+          <navigator url="/pages/shippingDetail/index?id={{item.id}}" wx:for="{{tableData}}" wx:key="index" class="table-tr proxy-flex is-align-middle font-size--24">
+            <view class="table-tr__col table-thead__td">{{ item.orderSn }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.categoryNum }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.addTime }}</view>
+            <view class="table-tr__col table-thead__td">{{ status[item.orderStatus] }}</view>
+          </navigator>
+        </block>
+        <view class="font-size--26 table-empty" wx:else>暂无相关数据</view>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Search from '../../components/search'
+  import brandOrderApis from '../../api/brandOrder'
+  export default class shippingList extends wepy.page {
+    config = {
+      navigationBarTitleText: '出货列表'
+    }
+    components = {
+      search: Search
+    }
+    data = {
+      isFirst: false,
+      page: 1,
+      limit: 20,
+      tableData: [],
+      hasMoreData: false,
+      status: {
+        0: '全部订单',
+        101: '待审核',
+        111: '待发货',
+        301: '待收货',
+        112: '审核不通过',
+        401: '已收货'
+      },
+      index: 0,
+      orderStatusArray: '',
+      orderSn: '',
+      order: 'desc'
+    }
+    events = {
+      handleToSearch (val) {
+        this.orderSn = val
+        this.page = 1
+        this.tableData = []
+        this.shippingList()
+      },
+      handleEmptySearch () {
+        this.orderSn = ''
+      }
+    }
+    computed = {
+      orderIndex () {
+        return Object.keys(this.status)
+      },
+      orderStatus () {
+        return Object.values(this.status)
+      }
+    }
+    bindPickerChange (e) {
+      const { value } = e.detail
+      this.index = value
+      this.page = 1
+      this.tableData = []
+      this.orderStatusArray = this.orderIndex.filter((item, index) => index === +value)[0]
+      this.shippingList()
+    }
+    async shippingList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, tableData, order, orderStatusArray, orderSn } = this
+        const opts = {
+          page,
+          limit,
+          order
+        }
+        if (+orderStatusArray) {
+          opts.orderStatusArray = orderStatusArray
+        }
+        if (orderSn) {
+          opts.orderSn = orderSn
+        }
+        const { data } = await brandOrderApis.list2(opts)
+        this.isFirst = true
+        if (page === 1) {
+          tableData = []
+        }
+        this.tableData = tableData.concat(data.items)
+        if (data.items.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad () {
+      this.shippingList()
+    }
+    onReachBottom () {
+      if (this.hasMoreData) {
+        this.shippingList()
+      }
+    }
+    methods = {
+      hanldeToTab (type) {
+        this.order = this.order === 'desc' ? 'asc' : 'desc'
+        this.page = 1
+        this.shippingList()
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+      if (this.isFirst) {
+        this.shippingList()
+      }
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/sellList/index.postcss';
+</style>

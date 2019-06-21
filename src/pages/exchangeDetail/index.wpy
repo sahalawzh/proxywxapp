@@ -1,0 +1,62 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-exchangeDetail">
+    <view class="content">
+      <view class="content-title proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">交易金额</view>
+        <view class="value font-size--36">¥240.00</view>
+      </view>
+
+      <view class="content-list font-size--28">
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__item">
+          <view class="label">物品价格</view>
+          <view class="value">300.00元</view>
+        </view>
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__item">
+          <view class="label">打折金额</view>
+          <view class="value">300.00元</view>
+        </view>
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__item">
+          <view class="label">会员积分</view>
+          <view class="value">300.00元</view>
+        </view>
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__item">
+          <view class="label">优惠券</view>
+          <view class="value">300.00元</view>
+        </view>
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__item">
+          <view class="label">运费</view>
+          <view class="value">300.00元</view>
+        </view>
+        <view class="proxy-flex is-align-middle is-justify-space-between content-list__total">
+          <view class="label font-size--32">合计</view>
+          <view class="value font-size--36">300.00<text class="font-size--28 unit">元</text></view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class ExchangeDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '明细详情'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/exchangeDetail/index.postcss';
+</style>

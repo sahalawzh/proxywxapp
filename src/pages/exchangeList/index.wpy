@@ -1,0 +1,39 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-exchangeList">
+    <view class="exchange-item">
+      <view class="title font-size--32">充值</view>
+      <view class="time font-size--28">2019-10-10 19:00</view>
+      <view class="value font-size--48">+200</view>
+    </view>
+    <view class="exchange-item">
+      <view class="title font-size--32">充值</view>
+      <view class="time font-size--28">2019-10-10 19:00</view>
+      <view class="value font-size--48">+200</view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class ExchangeList extends wepy.page {
+    config = {
+      navigationBarTitleText: '交易明细'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/exchangeList/index.postcss';
+</style>

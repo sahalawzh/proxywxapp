@@ -1,0 +1,97 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-proxyDetail">
+    <view class="proxy-detail">
+      <view class="proxy-detail__content">
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">名称</view>
+          <view class="font-size--28 value">{{ detail.name }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">联系人</view>
+          <view class="font-size--28 value">{{ detail.contacts }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">联系电话</view>
+          <view class="font-size--28 value">{{ detail.mobile }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">地址</view>
+          <view class="font-size--28 value">{{ detail.address }}</view>
+        </view>
+      </view>
+
+      <view class="proxy-detail__status">
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">是否可核销</view>
+          <switch checked="{{detail.status}}" disabled/>
+        </view>
+      </view>
+
+      <view class="proxy-detail_images" wx:if="{{detail.picUrl.length}}">
+        <view class="item proxy-flex is-align-top">
+          <view class="font-size--32 label">门店照片</view>
+          <view>
+            <image mode="aspectFill" class="img" wx:for="{{detail.picUrl}}" wx:key="index" src="{{ item }}"/>
+          </view>
+        </view>
+      </view>
+
+      <view class="proxy-detail_images" wx:if="{{detail.businessLicense.length}}">
+        <view class="item proxy-flex is-align-top">
+          <view class="font-size--32 label">资质照片</view>
+          <view>
+            <image mode="aspectFill" class="img" wx:for="{{detail.businessLicense}}" wx:key="index" src="../../images/product-test.png"/>
+          </view>
+        </view>
+      </view>
+
+      <!-- <view class="proxy-fl-r proxy-mt-30 proxy-mb-30 footer">
+        <button size="mini" @tap.stop="handleToCancel" class="open-type-btn font-size--30 footer-btn btn-border">取消</button>
+        <button size="mini" @tap.stop="handleToSubmit" type="warn" class="open-type-btn font-size--30 footer-btn">保存</button>
+      </view> -->
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class proxyDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '代理商详情'
+    }
+    data = {
+      detail: ''
+    }
+    onLoad () {
+      wx.getStorage({
+        key: 'proxyDetail',
+        success: (res) => {
+          this.detail = res.data
+        }
+      })
+    }
+    methods = {
+      handleToSubmit () {
+        const { name, contacts, mobile, address, status } = this.detail
+      },
+      handleToCancel () {
+        wx.navigateBack({
+          delta: 1
+        })
+      }
+    }
+    onUnload () {
+      wx.removeStorage({
+        key: 'proxyDetail'
+      })
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/proxyDetail/index.postcss';
+</style>

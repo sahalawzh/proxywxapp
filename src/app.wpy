@@ -1,0 +1,170 @@
+<style lang="postcss">
+  @import 'src/styles/common/common.postcss';
+  .page-contain {
+    background-color: #fff;
+  }
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+import Event from './utils/Event'
+const networkTypeImageTypes = {
+  'wifi': 80,
+  '4g': 80,
+  '3g': 70,
+  '2g': 50
+}
+export default class extends wepy.app {
+  config = {
+    pages: [
+      'pages/wxLogin/index', // 登录
+      'pages/register/index', // 注册审核
+      'pages/bindPhone/index', // 绑定手机
+      'pages/sellList/index', // 销售列表
+      'pages/sellOrder/index', // 销售详情
+      'pages/stockList/index', // 库存列表
+      'pages/stockDetail/index', // 库存详情
+      'pages/takeManage/index', // 盘点管理
+      'pages/takeDetail/index', // 盘点详情
+      'pages/takeCreat/index', // 盘点创建
+      'pages/index/index', // 首页
+      'pages/person/index', // 个人中心
+      'pages/proxyDetail/index', // 代理商详情
+      'pages/exchangeList/index', // 交易明细
+      'pages/exchangeDetail/index', // 交易详情
+      'pages/verificationManage/index', // 核销管理
+      'pages/verificationDeatil/index', // 核销详情
+      'pages/indentList/index', // 订货列表
+      'pages/indentAdd/index', // 添加订货
+      'pages/indentPay/index', // 确认订货
+      'pages/indentDetail/index', // 订货详情
+      'pages/wallet/index', // 钱包
+      'pages/walletUse/index', // 钱包提现或充值
+      'pages/invite/index', // 邀请
+      'pages/inviteCode/index', // 二维码邀请
+      'pages/shippingList/index', // 出货列表
+      'pages/shippingDetail/index', // 出货详情
+      'pages/visitRecord/index',
+      'pages/visitDetail/index',
+      'pages/agentList/index',
+      'pages/agentVisit/index',
+      'pages/performanceList/index',
+      'pages/performanceDetail/index',
+      'pages/repairFactoryDetail/index'
+    ],
+    window: {
+      backgroundTextStyle: 'light',
+      navigationBarBackgroundColor: '#fff',
+      navigationBarTitleText: '代理商',
+      navigationBarTextStyle: 'black'
+    },
+    permission: {
+      'scope.userLocation': {
+        'desc': '你的位置信息将用于地理位置导航'
+      }
+    }
+  }
+  globalData = {
+    subpub: new Event(),
+    userInfo: wx.getStorageSync('userInfo') || null,
+    baseUrl: ''
+  }
+
+  constructor () {
+    super()
+    this.use('promisify')
+    this.use('requestfix')
+    wx.windowWidth = 375
+    wx.imageQuality = 50
+    wx.pixelRatio = 2
+    wx.rpx2px = wx.windowWidth / 750
+    wx.isSupportWebp = false
+    wx.getSystemInfo({
+      success({windowWidth, windowHeight, pixelRatio, system}) {
+        let systemInfo = system.split(/\s/) || []
+        if (systemInfo[0] === 'Android' && systemInfo[1] > '4.2.1') {
+          wx.isSupportWebp = true
+        }
+        wx.windowWidth = windowWidth
+        wx.windowHeight = windowHeight
+        wx.pixelRatio = pixelRatio
+        wx.rpx2px = windowWidth / 750
+      }
+    })
+    // 根据网络变化加载不同质量的图片
+    wx.onNetworkStatusChange(function (res) {
+      if (res.isConnected) {
+        wx.imageQuality = networkTypeImageTypes[res.networkType] || 50
+      }
+    })
+    wx.getNetworkType({
+      success (res) {
+        wx.imageQuality = networkTypeImageTypes[res.networkType] || 50
+        console.log('app', wx.imageQuality)
+      }
+    })
+    if (process.env.NODE_ENV === 'development') {
+      this.globalData.baseUrl = 'http://47.106.85.244:8080/admin'
+    } else {
+      if (process.env.TARGET_APP === 'proapp') {
+        this.globalData.baseUrl = ''
+      } else {
+        this.globalData.baseUrl = 'http://47.106.85.244:8080/admin'
+      }
+    }
+    let cacheProxyInfo = wx.getStorageSync('proxy')
+    if (cacheProxyInfo) {
+      this.globalData.Token = cacheProxyInfo.token
+      this.globalData.brandInfo = cacheProxyInfo.brandInfo
+      this.globalData.userInfo = cacheProxyInfo.userInfo
+    }
+    this.globalData.loginUrl = `${this.globalData.baseUrl}/auth/login_by_weixin`
+    // 拦截request请求进行操作
+    this.intercept('request', {
+      config (payload) {
+        let _payload = payload
+        if (typeof payload === 'string') {
+          _payload = {
+            url: payload
+          }
+        }
+        if (_payload.url === `${wepy.$instance.globalData.loginUrl}`) {
+          return _payload
+        } else {
+          _payload.header = this.createAuthHeader()
+          // 组装请求连接
+          const d = _payload.data
+          // 组装请求连接
+          if (d && d._no_prefix) {
+            console.log('_no_prefix')
+          } else if (d && d.is_diy) {
+          } else {
+            _payload.url = this.globalData.baseUrl + '/' + _payload.url
+          }
+          return _payload
+        }
+      }
+    })
+    if (process.env.NODE_ENV === 'development') {
+      if (!wx.showLoading) {
+        wx.showLoading = function () {}
+        wx.hideLoading = function () {}
+      }
+    }
+  }
+  onShow () {
+  }
+
+  createAuthHeader () {
+    const token = wepy.$instance.globalData.Token
+    let header = {
+      'X-Litemall-Admin-Token': token,
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+    return header
+  }
+  onLaunch () {
+  }
+}
+</script>

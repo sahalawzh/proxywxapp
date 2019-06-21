@@ -1,0 +1,101 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-nav">
+    <navigator url="/pages/person/index" hover-class="none" class="nav-header proxy-flex" v-if="brandInfo">
+      <view class="nav-header__head">
+        <!-- <image wx:if="{{brandInfo.picUrl}}" src="{{brandInfo.picUrl}}" mode="aspectFill"></image> -->
+        <open-data type="userAvatarUrl"></open-data>
+      </view>
+      <view class="nav-header__info">
+        <view class="font-size--34 title">{{ brandInfo.agentName }}</view>
+        <view class="font-size--28">{{ brandInfo.levelName }}</view>
+      </view>
+    </navigator>
+
+    <view class="nav-list font-size--32">
+      <navigator url="/pages/sellList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-sell.png" mode="aspectFill"></image>
+        <view class="label">销售管理</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/verificationManage/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-verification.png" mode="aspectFill"></image>
+        <view class="label">核销管理</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/shippingList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-shipment.png" mode="aspectFill"></image>
+        <view class="label">出货管理</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/indentList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-order.png" mode="aspectFill"></image>
+        <view class="label">订货管理</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/agentList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-proxy.png" mode="aspectFill"></image>
+        <view class="label">代理商拜访</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/visitRecord/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-visit.png" mode="aspectFill"></image>
+        <view class="label">拜访记录</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/stockList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-stock.png" mode="aspectFill"></image>
+        <view class="label">库存查询</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/takeManage/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-take.png" mode="aspectFill"></image>
+        <view class="label">盘点管理</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/performanceList/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-performance.png" mode="aspectFill"></image>
+        <view class="label">业务员业绩报表</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/verificationManage/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-net.png" mode="aspectFill"></image>
+        <view class="label">进销存统计</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+      <navigator url="/pages/invite/index" class="nav-list__item proxy-flex is-align-middle">
+        <image class="icon-nav" src="../../images/icon-invite.png" mode="aspectFill"></image>
+        <view class="label">邀请</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '首页'
+    }
+    data = {
+      brandInfo: ''
+    }
+    onLoad () {
+      const { brandInfo } = wepy.$instance.globalData
+      this.brandInfo = brandInfo
+      console.log(this.brandInfo)
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/index/index.postcss';
+</style>

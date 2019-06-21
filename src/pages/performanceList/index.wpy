@@ -1,0 +1,54 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellList">
+    
+    <search></search>
+
+    <view class="sellList-wrap">
+
+      <view class="table">
+        <view class="table-tr table-thead proxy-flex is-align-middle">
+          <view class="table-tr__col table-thead__th">业务员</view>
+          <view class="table-tr__col table-thead__th">扩展代理商数量</view>
+          <view class="table-tr__col table-thead__th">本月业绩</view>
+          <view class="table-tr__col table-thead__th">总业绩</view>
+        </view>
+        <navigator url="/pages/performanceDetail/index" class="table-tr proxy-flex is-align-middle font-size--24">
+          <view class="table-tr__col table-thead__td">2456</view>
+          <view class="table-tr__col table-thead__td">A润滑油,B润滑油B润滑油</view>
+          <view class="table-tr__col table-thead__td">2019-01-01 12:00</view>
+          <view class="table-tr__col table-thead__td">待审核</view>
+        </navigator>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Search from '../../components/search'
+  export default class PerformanceList extends wepy.page {
+    config = {
+      navigationBarTitleText: '业绩报表'
+    }
+    components = {
+      search: Search
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/sellList/index.postcss';
+</style>

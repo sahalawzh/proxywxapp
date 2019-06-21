@@ -1,0 +1,270 @@
+{
+	"description": "项目配置文件。",
+	"packOptions": {
+		"ignore": []
+	},
+	"setting": {
+		"urlCheck": false,
+		"es6": false,
+		"postcss": false,
+		"minified": false,
+		"newFeature": true,
+		"autoAudits": false,
+		"checkInvalidKey": true,
+		"checkSiteMap": true,
+		"uploadWithSourceMap": true,
+		"babelSetting": {
+			"ignore": [],
+			"disablePlugins": [],
+			"outputPath": ""
+		}
+	},
+	"compileType": "miniprogram",
+	"libVersion": "2.7.1",
+	"appid": "wx682346fa5b40baf8",
+	"projectname": "proxywxapp",
+	"miniprogramRoot": "dist/",
+	"scripts": {},
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"currentL": -1,
+			"list": []
+		},
+		"miniprogram": {
+			"current": 9,
+			"list": [
+				{
+					"id": 0,
+					"name": "登录",
+					"pathName": "pages/wxLogin/index",
+					"query": "",
+					"scene": ""
+				},
+				{
+					"id": 0,
+					"name": "注册",
+					"pathName": "pages/register/index",
+					"query": "",
+					"scene": ""
+				},
+				{
+					"id": 2,
+					"name": "核销管理",
+					"pathName": "pages/verificationManage/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 3,
+					"name": "核销详情",
+					"pathName": "pages/verificationDeatil/index",
+					"query": "orderSn=20190613699266",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "拜访记录",
+					"pathName": "pages/agentList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "访客记录",
+					"pathName": "pages/visitRecord/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "访客详情",
+					"pathName": "pages/visitDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "钱包",
+					"pathName": "pages/wallet/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "钱包使用",
+					"pathName": "pages/walletUse/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 9,
+					"name": "添加订货",
+					"pathName": "pages/indentPay/index",
+					"query": "orderId=63",
+					"scene": null
+				},
+				{
+					"id": 5,
+					"name": "确认订单",
+					"pathName": "pages/indentPay/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 5,
+					"name": "邀请",
+					"pathName": "pages/invite/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 5,
+					"name": "二维码邀请",
+					"pathName": "pages/inviteCode/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 5,
+					"name": "添加订货",
+					"pathName": "pages/indentAdd/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 14,
+					"name": "订货详情",
+					"pathName": "pages/indentDetail/index",
+					"query": "id=63",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "订货列表",
+					"pathName": "pages/indentList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "出货列表",
+					"pathName": "pages/shippingList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 17,
+					"name": "出货详情",
+					"pathName": "pages/shippingDetail/index",
+					"query": "id=54",
+					"scene": null
+				},
+				{
+					"id": 11,
+					"name": "侧边栏导航",
+					"pathName": "pages/index/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "个人中心",
+					"pathName": "pages/person/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "盘点管理",
+					"pathName": "pages/takeManage/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "盘点详情",
+					"pathName": "pages/takeDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "创建盘点",
+					"pathName": "pages/takeCreat/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "交易明细",
+					"pathName": "pages/exchangeList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "交易详情",
+					"pathName": "pages/exchangeDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "库存列表",
+					"pathName": "pages/stockList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "库存详情",
+					"pathName": "pages/stockDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "代理商详情",
+					"pathName": "pages/proxyDetail/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "绑定手机",
+					"pathName": "pages/bindPhone/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "销售订单",
+					"pathName": "pages/sellOrder/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "销售列表",
+					"pathName": "pages/sellList/index",
+					"query": "",
+					"scene": null
+				}
+			]
+		}
+	}
+}

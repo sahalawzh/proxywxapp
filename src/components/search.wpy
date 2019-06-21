@@ -1,0 +1,40 @@
+<template>
+  <view class="control-search">
+    <!-- <view class="control-wrap proxy-flex is-align-middle is-justify-center">
+      <image mode="aspectFill" class="icon-search" src="../images/icon-search.png"></image>
+      <text class="font-size--28 label">搜索</text>
+    </view> -->
+    <view class="control-wrap control-focus proxy-pl-30 proxy-flex is-align-middle">
+      <image mode="aspectFill" class="icon-search" src="../images/icon-search.png"></image>
+      <input type="text"
+        confirm-type="search"
+        placeholder="搜索"
+        bindinput="handleBindinput"
+        placeholder-class="font-size--28"
+        bindconfirm="handleToSearch"
+        class="control-input font-size--28"/>  
+    </view>
+  </view>
+</template>
+<script>
+import wepy from 'wepy'
+export default class Search extends wepy.component {
+  data = {
+  }
+  methods = {
+    handleBindinput (e) {
+      const { value } = e.detail
+      if (!value) {
+        this.$emit('handleEmptySearch')
+      }
+    },
+    handleToSearch (e) {
+      const { value } = e.detail
+      this.$emit('handleToSearch', value)
+    }
+  }
+}
+</script>
+<style lang='postcss'>
+  @import 'src/styles/modules/search.postcss';
+</style>

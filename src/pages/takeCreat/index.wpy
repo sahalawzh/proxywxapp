@@ -1,0 +1,227 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-takeCreat">
+    <view class="take-creat">
+      <form bindsubmit="handleToSubmit">
+
+        <view class="take-creat__content">
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">仓库</view>
+            <picker bindchange="bindPickerChange" value="{{index}}" range="{{storeName}}">
+              <view class="font-size--30 item-select proxy-flex is-align-middle">
+                <text class="tab-plane__label">{{ storeName[index] }}</text>
+                <text class="arrow-box">
+                  <text class="arrow-box__up arrow"></text>
+                  <text class="arrow-box__down arrow"></text>
+                </text>
+              </view>
+            </picker>
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">货物名称</view>
+            <picker bindchange="bindPickerChangeGood" value="{{goodIndex}}" range="{{goodName}}">
+              <view class="font-size--30 item-select proxy-flex is-align-middle">
+                <text class="tab-plane__label">{{ goodName[goodIndex] }}</text>
+                <text class="arrow-box">
+                  <text class="arrow-box__up arrow"></text>
+                  <text class="arrow-box__down arrow"></text>
+                </text>
+              </view>
+            </picker>
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">库存数量</view>
+            <view class="font-size--28 value">{{ goodList[goodIndex].stockNum }}</view>
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">盘点数量：</view>
+            <input class="font-size--28 value value-control" name="mSum" type="number" placeholder-class="placeholder" placeholder="请输入盘点数量">
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">备注：</view>
+            <input class="font-size--28 value value-control" name="info" type="text" placeholder-class="placeholder" placeholder="请输入备注">
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">盘点开始时间</view>
+            <view class="font-size--28 value">{{ goodList[goodIndex].updateTie }}</view>
+          </view>
+          <view class="item proxy-flex is-align-middle is-justify-space-between">
+            <view class="font-size--32 label">盘点人</view>
+            <input class="font-size--28 value value-control" name="mUserName" type="text" placeholder-class="placeholder" placeholder="请输入盘点人">
+          </view>
+        </view>
+
+        <view class="proxy-fl-r proxy-mt-30 footer">
+          <button size="mini" class="open-type-btn font-size--30 footer-btn btn-border" @tap.stop="hanldeCancel">取消</button>
+          <button size="mini" type="warn" form-type="submit" class="open-type-btn font-size--30 footer-btn">确认盘点</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import stockApis from '../../api/stock'
+  import wxutils from '../../utils/wxutils'
+  export default class TakeCreat extends wepy.page {
+    config = {
+      navigationBarTitleText: '创建盘点'
+    }
+    data = {
+      storeList: [],
+      index: 0,
+      goodList: [],
+      goodIndex: 0
+    }
+    computed = {
+      storeName () {
+        let result = []
+        this.storeList.forEach(item => {
+          result.push(item.name)
+        })
+        return result
+      },
+      goodName () {
+        let result = []
+        this.goodList.forEach(item => {
+          result.push(item.goodsName)
+        })
+        return result
+      }
+    }
+    watch = {
+      storeList (val) {
+        this.handleGoodList()
+      }
+    }
+    async handleGoodList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          storehouseId: this.storeList[this.index].id,
+          page: 1,
+          limit: 2147483647
+        }
+        const { data } = await stockApis.list(opts)
+        this.goodList = data.items
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    async storehouseList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          page: 1,
+          limit: 2147483647
+        }
+        const { data } = await stockApis.storehouseList(opts)
+        this.storeList = data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad () {
+      this.storehouseList()
+    }
+    verification (formData) {
+      let { mSum, info, mUserName } = formData
+      const errVaild = {
+        vaild: true,
+        msg: ''
+      }
+      if (!mSum) {
+        errVaild.vaild = false
+        errVaild.msg = '盘点数量不能为空'
+        return errVaild
+      }
+      if (!info) {
+        errVaild.vaild = false
+        errVaild.msg = '备注不能为空'
+        return errVaild
+      }
+      if (!mUserName) {
+        errVaild.vaild = false
+        errVaild.msg = '盘点人不能为空'
+        return errVaild
+      }
+      return errVaild
+    }
+    methods = {
+      async handleToSubmit (e) {
+        // mSum, info, mUserName
+        const formData = e.detail.value
+        const errVaild = this.verification(formData)
+        if (!errVaild.vaild) {
+          wx.showToast({
+            title: errVaild.msg,
+            icon: 'none'
+          })
+          return
+        }
+        try {
+          wx.showLoading({
+            title: '提交中',
+            mask: true
+          })
+          const { storeList, index, goodList, goodIndex } = this
+          const { id, name } = storeList[index]
+          const { goodsId, goodsName, stockNum, id: stockId, updateTie } = goodList[goodIndex]
+          const opts = {
+            ...formData,
+            storehouseId: id,
+            storehouseName: name,
+            goodsId,
+            goodsName,
+            sSum: stockNum,
+            stockId,
+            startTime: updateTie
+          }
+          await stockApis.addCheck(opts)
+          wxutils.backOrRedirect('/pages/takeManage/index?id=122')
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      },
+      hanldeCancel () {
+        wx.navigateBack({
+          delta: 1
+        })
+      },
+      bindPickerChange (e) {
+        const { value } = e.detail
+        this.index = +value
+        this.handleGoodList()
+      },
+      bindPickerChangeGood (e) {
+        const { value } = e.detail
+        this.goodIndex = +value
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/takeCreat/index.postcss';
+</style>

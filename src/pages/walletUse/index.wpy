@@ -1,0 +1,40 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-walletUse">
+    <view class="walletUse-wrap proxy-ml-30 proxy-mr-30">
+      <view class="font-size--30 title">提现金额</view>
+      <view class="amount proxy-flex is-align-middle">
+        <view class="amount-unit">￥</view>
+        <view>
+          <input type="number" class="amount-price" value="{{9999}}"/>
+        </view>
+      </view>
+      <view class="font-size--24 tip">当前可提现余额100元，<text class="tip-tag">全部提现</text></view>
+      <button class="font-size--32 wallet-btn" type="primary">提现</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class WalletUse extends wepy.page {
+    config = {
+      navigationBarTitleText: ''
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/walletUse/index.postcss';
+</style>

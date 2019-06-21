@@ -1,0 +1,317 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellOrder">
+    <form bindsubmit="handleSubmitForm">
+      <view class="sellOrder-products">
+        <view class="sellOrder-products__item" wx:for="{{goods}}" wx:key="index">
+          <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{order.orderStatus === 111}}">
+            <view class="font-size--32 label">出货仓库</view>
+            <picker bindchange="bindPickerChange" data-index="{{index}}" value="{{item.index}}" range-key="name" range="{{item.storehouseList}}">
+              <view class="font-size--30 item-select proxy-flex is-align-middle">
+                <text class="tab-plane__label">{{ item.storehouseList[item.index].name }}</text>
+                <text class="arrow-box">
+                  <text class="arrow-box__up arrow"></text>
+                  <text class="arrow-box__down arrow"></text>
+                </text>
+              </view>
+            </picker>
+          </view>
+          <view class="proxy-flex product-item" :class="{'no-store': order.orderStatus !== 111}">
+            <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
+            <view class="product-content">
+              <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+              <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+              <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
+                <view>{{ item.specifications }}</view>
+                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabed}}" max="{{ item.storehouseList[item.index].message }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+              </view>
+              <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="sellOrder-list">
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订单号</view>
+          <view class="value font-size--28">{{ order.orderSn }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订货单金额</view>
+          <view class="value font-size--28">{{ totalPrice }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">制单日期</view>
+          <view class="value font-size--28">{{ order.addTime }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">制单人</view>
+          <view class="value font-size--28">{{ order.consignee }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">联系电话</view>
+          <view class="value font-size--28">{{ order.mobile }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">审核日期</view>
+          <view class="value font-size--28">{{ order.updateTime }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订单状态</view>
+          <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">地址</view>
+          <view class="value font-size--28">{{ order.address }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">备注</view>
+          <view class="value font-size--28">{{ order.comments }}</view>
+        </view>
+      </view>
+
+      <view class="sellOrder-info font-size--32 proxy-mb-30">
+        <block wx:if="{{order.orderStatus !== 101}}">
+          <view class="sellOrder-info__item proxy-flex is-align-middle">
+            <view>物流单号:</view>
+            <input class="font-size--28 value" disabled="{{disabed}}" name="shipSn" value="{{ order.shipSn }}" type="number" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入物流单号'}}">
+          </view>
+          <view class="sellOrder-info__item proxy-flex is-align-middle">
+            <view>配送方式:</view>
+            <input class="font-size--28 value" disabled="{{disabed}}" name="shipChannel" value="{{ order.shipChannel }}" type="text" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入配送方式'}}">
+          </view>
+        </block>
+        <view class="sellOrder-info__item proxy-flex is-align-middle">
+          <view>应付金额:</view>
+          <input class="font-size--28 value" disabled="{{disabed}}" name="actualPrice" value="{{ order.actualPrice }}" type="text" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入付款金额'}}">
+        </view>
+      </view>
+      
+      <view class="footer">
+        <button wx:if="{{order.orderStatus === 101}}" size="mini" class="open-type-btn font-size--30 footer-btn btn-border" @tap.stop="hanldeRejected">审核不通过</button>
+        <button wx:if="{{btnText}}" form-type="submit" size="mini" type="warn" class="open-type-btn font-size--30 footer-btn">{{ btnText }}</button>
+      </view>
+    </form>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import brandOrderApis from '../../api/brandOrder'
+  import { accMul, accAdd } from '../../utils/arithmetic'
+  import wxutils from '../../utils/wxutils'
+  export default class shippingDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '出货详情',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index',
+        'proxy-stepper': '../../packages/stepper/index'
+      }
+    }
+    data = {
+      id: '',
+      order: '',
+      goods: [],
+      status: {
+        101: '待审核',
+        111: '待发货',
+        301: '待收货',
+        112: '审核不通过',
+        401: '已收货'
+      }
+    }
+    computed = {
+      totalPrice () {
+        if (this.goods.length) {
+          let result = 0
+          this.goods.forEach(item => {
+            result = accAdd(result, accMul(item.price, item.number))
+          })
+          return result
+        }
+        return '0.00'
+      },
+      disabed () {
+        if (this.order.orderStatus === 101 || this.order.orderStatus === 111) {
+          return false
+        }
+        return true
+      },
+      btnText () {
+        if (this.order.orderStatus === 101) {
+          return '审核通过'
+        } else if (this.order.orderStatus === 111) {
+          return '完成发货'
+        }
+        return ''
+      }
+    }
+    async getShippingDetail () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          id: this.id
+        }
+        const { data } = await brandOrderApis.detail(opts)
+        data.orderGoods.forEach(item => {
+          item.sum = accMul(item.price, item.number)
+          let storeIndex = item.storehouseList.findIndex(function (store) {
+            return store.id === item.outStockhouseId
+          })
+          item.index = storeIndex === -1 ? 0 : storeIndex
+        })
+        this.order = data.order
+        this.goods = data.orderGoods
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad ({ id }) {
+      this.id = id
+      this.getShippingDetail()
+    }
+    bindPickerChange (e) {
+      const { value } = e.detail
+      const { index } = e.target.dataset
+      this.goods[index].index = +value
+      this.goods[index].outStockhouseId = this.goods[index].storehouseList[+value].id
+    }
+    verification (formData, orderStatus) {
+      let { shipSn, shipChannel, actualPrice } = formData
+      const errVaild = {
+        vaild: true,
+        msg: ''
+      }
+      if (orderStatus === 101) {
+        if (!actualPrice) {
+          errVaild.vaild = false
+          errVaild.msg = '应付金额不能为空'
+          return errVaild
+        }
+      } else {
+        if (!shipSn) {
+          errVaild.vaild = false
+          errVaild.msg = '物流单号不能为空'
+          return errVaild
+        }
+        if (!shipChannel) {
+          errVaild.vaild = false
+          errVaild.msg = '配送方式不能为空'
+          return errVaild
+        }
+        if (!actualPrice) {
+          errVaild.vaild = false
+          errVaild.msg = '应付金额不能为空'
+          return errVaild
+        }
+      }
+      return errVaild
+    }
+    async handleCreat (params) {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let fn = ''
+        const { orderId, shipChannel, shipSn } = params
+        let opts
+        if (this.order.orderStatus === 101) {
+          fn = 'approved'
+          opts = orderId
+        } else if (this.order.orderStatus === 111) {
+          fn = 'ship'
+          opts = {
+            orderId,
+            shipChannel,
+            shipSn
+          }
+        }
+        await brandOrderApis[fn](opts)
+        wxutils.backOrRedirect('/pages/shippingList/index')
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    methods = {
+      async hanldeRejected () {
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          await brandOrderApis.rejected(this.order.id)
+          wxutils.backOrRedirect('/pages/shippingList/index')
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      },
+      async handleSubmitForm (e) {
+        const formData = e.detail.value
+        const errVaild = this.verification(formData, this.order.orderStatus)
+        let { shipSn = '', shipChannel = '', actualPrice = '' } = formData
+        shipSn = shipSn.trim()
+        shipChannel = shipChannel.trim()
+        actualPrice = actualPrice.trim()
+        if (!errVaild.vaild) {
+          wx.showToast({
+            title: errVaild.msg,
+            icon: 'none'
+          })
+          return
+        }
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          let params = {
+            shipSn,
+            shipChannel,
+            actualPrice
+          }
+          const { order, goods } = this
+          const opts = {
+            brandOrder: {...params, ...order},
+            goodsList: goods
+          }
+          const { data } = await brandOrderApis.update(opts)
+          params.orderId = data.orderId
+          this.handleCreat(params)
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      },
+      async changeQty (e) {
+        const { index } = e.target.dataset
+        const { value } = e.detail
+        this.goods[index].number = value
+        this.goods[index].sum = accMul(this.goods[index].price, value)
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/indentDetail/index.postcss';
+</style>

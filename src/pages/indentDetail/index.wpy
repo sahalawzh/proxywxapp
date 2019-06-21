@@ -1,0 +1,260 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellOrder">
+    <view class="sellOrder-products">
+      <view class="sellOrder-products__item" wx:for="{{goods}}" wx:key="index">
+        <view class="proxy-flex store-item is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">入库仓库</view>
+          <block wx:if="{{order.orderStatus === 301}}">
+            <picker bindchange="bindPickerChange" data-index="{{index}}" value="{{item.index}}" range-key="name" range="{{item.storehouseList}}">
+              <view class="font-size--30 item-select proxy-flex is-align-middle">
+                <text class="tab-plane__label">{{ storeList[item.index].name }}</text>
+                <text class="arrow-box">
+                  <text class="arrow-box__up arrow"></text>
+                  <text class="arrow-box__down arrow"></text>
+                </text>
+              </view>
+            </picker>
+          </block>
+          <view class="font-size--30" wx:else>{{item.storehouseList[item.index].name}}</view>
+        </view>
+        <view class="proxy-flex product-item">
+          <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
+          <view class="product-content">
+            <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+            <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+            <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
+              <view>{{ item.specifications }}/桶</view>
+              <view>x{{ item.number }}</view>
+              <!-- <proxy-stepper width="48rpx" height="46rpx" max="{{storeList[item.index].number}}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper> -->
+            </view>
+            <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="sellOrder-list">
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单号</view>
+        <view class="value font-size--28">{{ order.orderSn }}</view>
+      </view>
+      <!-- <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">商品名称</view>
+        <view class="value font-size--28">{{ order.orderSn }}</view>
+      </view> -->
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订货单金额</view>
+        <view class="value font-size--28">{{ order.actualPrice }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">制单日期</view>
+        <view class="value font-size--28">{{ order.addTime }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">制单人</view>
+        <view class="value font-size--28">{{ order.consignee }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">审核日期</view>
+        <view class="value font-size--28">{{ order.updateTime }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单状态</view>
+        <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">地址</view>
+        <view class="value font-size--28">{{ order.address }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">备注</view>
+        <view class="value font-size--28">{{ order.message }}</view>
+      </view>
+    </view>
+
+    <view class="sellOrder-info font-size--32">
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>商品数量:</view>
+        <view class="value">{{ qty }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>物流单号:</view>
+        <view class="value">{{ order.shipSn }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>配送方式:</view>
+        <view class="value">{{ order.shipChannel }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>联系电话:</view>
+        <view class="value">{{ order.mobile }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>应付金额:</view>
+        <view class="value">{{ order.actualPrice }}</view>
+        <!-- <input class="font-size--28 value" type="text" value="{{'北京市朝阳区三里屯'}}" placeholder-class="placeholder" placeholder="请输入备注"> -->
+      </view>
+    </view>
+
+    <view class="proxy-mt-30 footer" wx:if="{{ order.orderStatus === 301 }}">
+      <button size="mini" @tap.stop="hanldeCancel" class="open-type-btn font-size--30 footer-btn btn-border">取消</button>
+      <button size="mini" @tap.stop="handleToConfirm" type="warn" class="open-type-btn font-size--30 footer-btn">收货</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import brandOrderApis from '../../api/brandOrder'
+  import stockApis from '../../api/stock'
+  import { accMul } from '../../utils/arithmetic'
+  import wxutils from '../../utils/wxutils'
+  export default class IndentDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '订货详情',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index',
+        'proxy-stepper': '../../packages/stepper/index'
+      }
+    }
+    data = {
+      id: '',
+      order: '',
+      goods: [],
+      status: {
+        101: '待审核',
+        111: '待发货',
+        301: '待收货',
+        112: '审核不通过',
+        401: '已收货'
+      },
+      storeList: []
+    }
+    computed = {
+      qty () {
+        let sum = 0
+        this.goods.forEach(item => {
+          sum += item.number
+        })
+        return sum
+      }
+    }
+    async storehouseList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          page: 1,
+          limit: 2147483647
+        }
+        const { data } = await stockApis.storehouseList(opts)
+        this.storeList = data
+        this.goods.forEach(item => {
+          item.stockhouseId = this.storeList[item.index].id
+        })
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    async getBrandDetail () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          id: this.id
+        }
+        const { data } = await brandOrderApis.detail(opts)
+        data.orderGoods.forEach(item => {
+          item.sum = accMul(item.price, item.number)
+          item.index = 0
+        })
+        this.order = data.order
+        if (this.order.orderStatus === 301) { // 待收货
+          this.storehouseList()
+        }
+        this.goods = data.orderGoods
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad ({id}) {
+      this.id = id
+      this.getBrandDetail()
+    }
+    bindPickerChange (e) {
+      const { value } = e.detail
+      const { index } = e.target.dataset
+      this.goods[index].index = +value
+      this.goods[index].stockhouseId = this.storeList[+value].id
+    }
+    async handleCreat (orderId) {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        await brandOrderApis.confirm(orderId)
+        wxutils.backOrRedirect('/pages/indentList/index')
+        wepy.$instance.globalData.subpub.emit('handleAddIndent')
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    methods = {
+      hanldeCancel () {
+        wx.navigateBack({
+          delta: 1
+        })
+      },
+      async handleToConfirm () {
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          const { order, goods } = this
+          const opts = {
+            brandOrder: order,
+            goodsList: goods
+          }
+          const { data } = await brandOrderApis.update(opts)
+          this.handleCreat(data.orderId)
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      }
+      // async changeQty (e) {
+      //   const { index } = e.target.dataset
+      //   const { value } = e.detail
+      //   this.goods[index].number = value
+      //   this.goods[index].sum = accMul(this.goods[index].price, value)
+      // }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/indentDetail/index.postcss';
+</style>

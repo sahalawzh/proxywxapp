@@ -1,0 +1,45 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-login">
+    <view class="login-box">
+      <button type="primary" lang="zh_CN" open-type="getUserInfo" bindgetuserinfo="onGetUserInfo">微信登录</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import http from '../../utils/http'
+  export default class register extends wepy.page {
+    config = {
+      navigationBarTitleText: '登录'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+      onGetUserInfo (e) {
+        const { errMsg, userInfo } = e.detail
+        if (errMsg === 'getUserInfo:ok') {
+          http.wxLogin(userInfo)
+        } else {
+          wx.showToast({
+            title: '微信登录失败',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/wxLogin/index.postcss';
+</style>

@@ -1,0 +1,53 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-inviteCode">
+    <view class="invite-code">
+      <view class="title font-size--36">微信扫码可注册</view>
+      <view class="code-box">
+        <image class="icon-code" src="{{ codeImg }}" mode="aspectFill"></image>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import adminApis from '../../api/admin'
+  export default class inviteCode extends wepy.page {
+    config = {
+      navigationBarTitleText: '二维码邀请'
+    }
+    data = {
+      codeImg: ''
+    }
+    async getInviteCode (saveItems) {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await adminApis.share()
+        this.codeImg = data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad () {
+      this.getInviteCode()
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/inviteCode/index.postcss';
+</style>

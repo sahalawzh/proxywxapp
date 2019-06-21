@@ -1,0 +1,78 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-visit">
+    <view class="visit-list" wx:if="{{list.length}}">
+      <navigator url="/pages/agentVisit/index?id={{item.id}}&agentName={{item.agentName}}&mobile={{item.mobile}}" hover-class="none" wx:for="{{list}}" wx:key="index" class="visit-list__item proxy-flex">
+        <image mode="aspectFill" class="visit-icon" src="{{ item.picUrl }}"></image>
+        <view class="content font-size--32">
+          <view class="content-title">{{ item.agentName }}</view>
+          <view class="content-desc">{{ item.address }}</view>
+          <view class="arrow-box proxy-flex is-align-middle">
+            <view class="font-size--28">拜访</view>
+            <image class="arrow-icon" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+          </view>
+        </view>
+      </navigator>
+    </view>
+    <view wx:else class="font-size--28 visit-empty">暂无相关数据~</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import visitApis from '../../api/visit'
+  export default class AgentList extends wepy.page {
+    config = {
+      navigationBarTitleText: '代理商列表'
+    }
+    data = {
+      page: 1,
+      limit: 20,
+      list: [],
+      hasMoreData: false
+    }
+    async agentList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, list } = this
+        const opts = {
+          page,
+          limit
+        }
+        const { data } = await visitApis.agentList(opts)
+        if (page === 1) {
+          list = []
+        }
+        this.list = list.concat(data)
+        if (data.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad () {
+      this.agentList()
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/agentList/index.postcss';
+</style>

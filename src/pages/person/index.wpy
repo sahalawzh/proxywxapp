@@ -1,0 +1,98 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-withdraw">
+    <!-- <view class="withdraw-header">
+      <view class="font-size--32">钱包金额</view>
+      <view class="value">900</view>
+      <navigator url="/pages/wallet/index" class="withdraw-btn font-size--32 proxy-flex is-align-middle is-justify-center">钱包</navigator>
+    </view> -->
+
+    <view class="withdraw-content">
+      <view @tap.stop="handleProxyDetail({{item}})" wx:for="{{list}}" wx:key="index" hover-class="none" class="item proxy-flex">
+        <image mode="aspectFill" class="item-img" src="../../images/test.png"></image>
+        <view class="item-info font-size--32">
+          <proxy-elip line="1" class="title">{{ item.name }}</proxy-elip>
+          <view class="name">{{ item.contacts }}<text>{{ item.mobile }}</text></view>
+          <proxy-elip line="1" class="address">{{ item.address }}</proxy-elip>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import storeApis from '../../api/store'
+  import wxutils from '../../utils/wxutils'
+  export default class SilderNav extends wepy.page {
+    config = {
+      navigationBarTitleText: '我的门店',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
+    }
+    data = {
+      page: 1,
+      limit: 20,
+      list: [],
+      hasMoreData: false
+    }
+    async storeList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, list } = this
+        const opts = {
+          page,
+          limit
+        }
+        const { data } = await storeApis.list(opts)
+        if (page === 1) {
+          list = []
+        }
+        this.list = list.concat(data.items)
+        if (data.items.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onReachBottom () {
+      if (this.hasMoreData) {
+        this.storeList()
+      }
+    }
+    onLoad () {
+      this.storeList()
+    }
+    methods = {
+      handleProxyDetail (item) {
+        wx.setStorage({
+          key: 'proxyDetail',
+          data: item,
+          success: () => {
+            wxutils.backOrNavigate('/pages/proxyDetail/index')
+          }
+        })
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/person/index.postcss';
+</style>

@@ -1,0 +1,336 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-indentAdd">
+    <view class="nav">
+      <search></search>
+      <view class="goods-list-tabbar proxy-flex is-align-middle">
+        <view class="goods-list-tabbar-items">
+          <view
+            @tap.stop="hanldeToTab({{'synthetical'}})"
+            class="goods-list-tabbar__item font-size--28 {{currentTab === 'synthetical' ? 'active' : ''}}">
+            <view class="tabbar__cont">
+              <text class="tabbar__label">综合</text>
+            </view>
+          </view>
+          <!-- <view 
+            class="goods-list-tabbar__item font-size--28">
+            <view class="tabbar__cont">
+              <text class="tabbar__label">销量</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up arrow"></text>
+                <text class="arrow-box__down arrow"></text>
+              </text>
+            </view>
+          </view> -->
+          <view
+            @tap.stop="hanldeToTab({{'price'}})"
+            class="goods-list-tabbar__item font-size--28 {{currentTab === 'price' ? 'active' : ''}}">
+            <view class="tabbar__cont">
+              <text class="tabbar__label">价格</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up {{order === 'desc' ? 'active' : ''}} arrow"></text>
+                <text class="arrow-box__down {{order === 'asc' ? 'active' : ''}} arrow"></text>
+              </text>
+            </view>
+          </view>
+          <view
+            @tap.stop="handleToggleFilter"
+            class="goods-list-tabbar__item font-size--28">
+            <view class="tabbar__cont">
+              <text class="tabbar__label">筛选</text>
+              <image mode="aspectFill" src="../../images/icon-filter.png" class="filter-icon"></image>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="goods-lists" wx:if="{{ list.length }}">
+      <view class="goods-lists__item proxy-flex" wx:for="{{list}}" wx:key="index">
+        <view class="proxy-radio radio-box font-size--26 proxy-flex is-align-middle" @tap.stop="handleToSelected({{item}}, {{index}})">
+          <lebel class="radio">
+            <image hidden='{{ !item.checked }}' class="ico_selected" src='../../images/icon-selected.png'></image>
+          </lebel>
+        </view>
+        <view class="proxy-background-image product-img"
+          style="background-image: url({{ item.picUrl }})">
+        </view>
+        <view class="product-content proxy-flex is-justify-space-between">
+          <proxy-elip line="2" class="name font-size--28">{{ item.name }}测试测试测试测试测试测试</proxy-elip>
+          <view class="font-size--26 font-color-silver-common proxy-mt-30">库存：{{ item.number }}</view>
+          <view class="proxy-flex is-align-bottom is-justify-space-between">
+            <view class="font-size--24 unit">{{ item.skuName }}/{{ item.unit }}</view>
+            <view>
+              <text class="font-size--28 font-color-silver-common">拿货价：</text>
+              <text class="font-size--46 price"><text class="font-size--30">￥</text>{{ item.price }}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+    <view class="goods-empty font-size--28" wx:else>暂无相关数据~</view>
+
+    
+
+    <view class="font-size--32 footer proxy-flex is-align-middle is-justify-center" @tap.stop="handleToNext">下一步</view>
+
+
+    <view class="float-box {{isRuleTrue ? 'isRuleShow' : 'isRuleHide'}}" catchtouchmove="true">
+      <view class="float-box-mask" @tap.stop="handleClosePopup"></view>
+      <view class="float-box-wrap float-box-right">
+        <view class="animation-element">
+          <view class="title font-size--36">筛选</view>
+          <scroll-view scroll-y="true" class="float-box-bar" catchtouchmove="true">
+            <view class="bar font-size--28">
+              <view class="bar-item" wx:for="{{ productType }}" @tap.stop="handleToggleType({{item}}, {{index}})" wx:key="index">{{ item }}</view>
+            </view>
+          </scroll-view>
+          <scroll-view scroll-y="true" class="float-box-content" catchtouchmove="true">
+            <view class="content">
+              <block wx:for="{{typeList}}" wx:key="index">
+                <view class="content-title font-size--28">{{ item.name }}</view>
+                <view class="content-items proxy-flex">
+                  <view class="content-items__item" wx:for="{{ item.children }}" @tap.stop="handleFilterProduct({{_item.id}})" wx:key="_item" wx:for-item="_item">
+                    <image mode="aspectFill" src="{{ _item.iconUrl }}" class="product-img"></image>
+                    <view class="font-size--24 label">{{ _item.name }}</view>
+                  </view>
+                </view>
+              </block>
+            </view>
+          </scroll-view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import goodApis from '../../api/good'
+  import Search from '../../components/search'
+  import wxutils from '../../utils/wxutils'
+  import brandOrderApis from '../../api/brandOrder'
+  export default class IndentAdd extends wepy.page {
+    config = {
+      navigationBarTitleText: '添加订货',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
+    }
+    components = {
+      search: Search
+    }
+    data = {
+      isRuleTrue: false,
+      page: 1,
+      limit: 10,
+      list: [],
+      hasMoreData: false,
+      typeList: [],
+      productType: [],
+      categoryId: '',
+      currentTab: 'synthetical',
+      order: 'desc',
+      name: '',
+      cacheList: []
+    }
+    async getGoodList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, list, categoryId, order, currentTab, name } = this
+        const opts = {
+          page,
+          limit
+        }
+        if (categoryId) {
+          opts.categoryId = categoryId
+        }
+        if (currentTab === 'price' && order) {
+          opts.order = order
+        }
+        if (name) {
+          opts.name = name
+        }
+        const { data } = await goodApis.goodsList(opts)
+        if (page === 1) {
+          list = []
+        }
+        let result = []
+        data.items.forEach(item => {
+          const { name, unit, picUrl } = item
+          item.products.forEach(_item => {
+            const { specifications, price, number, goodsId, id } = _item
+            let dataItem = {
+              name,
+              unit,
+              picUrl,
+              skuName: specifications.join(','),
+              price,
+              number,
+              checked: false,
+              goodsId,
+              productId: id
+            }
+            result.push(dataItem)
+          })
+        })
+        result.forEach(element => {
+          this.cacheList.length && this.cacheList.forEach(cacheItem => {
+            if (element.productId === cacheItem.productId) {
+              element.checked = cacheItem.checked
+            }
+          })
+        })
+        this.list = list.concat(result)
+        if (data.items.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page ++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    events = {
+      handleToSearch (val) {
+        this.name = val
+        this.page = 1
+        this.getGoodList()
+      },
+      handleEmptySearch () {
+        this.name = ''
+      }
+    }
+    onReachBottom () {
+      if (this.hasMoreData) {
+        this.getGoodList()
+      }
+    }
+    async listByOrder (type) {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await goodApis.listByOrder()
+        let productType = ['全部类别']
+        data.forEach(item => {
+          productType.push(item.name)
+        })
+        this.productType = productType
+        if (type) {
+          let filterData = data.filter(item => {
+            if (type === item.name) {
+              return item
+            }
+          })
+          this.typeList = filterData
+        } else {
+          this.typeList = data
+        }
+        wx.hideLoading()
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad () {
+      this.getGoodList()
+    }
+    async handleCreatOrder (saveItems) {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          goodsList: saveItems,
+          brandOrder: {},
+          orderStatus: -1
+        }
+        await brandOrderApis.submit(opts)
+        wxutils.backOrNavigate('/pages/indentPay/index')
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    methods = {
+      handleToNext () {
+        if (this.cacheList.length < 1) {
+          wx.showToast({
+            title: '还没有勾选相关商品',
+            icon: 'none'
+          })
+          return
+        }
+        this.handleCreatOrder(this.cacheList)
+      },
+      hanldeToTab (type) {
+        this.currentTab = type
+        if (type === 'price') {
+          this.order = this.order === 'desc' ? 'asc' : 'desc'
+        }
+        this.page = 1
+        this.list = []
+        this.getGoodList()
+      },
+      handleToSelected (item, index) {
+        this.list[index].checked = !item.checked
+        let cacheList = []
+        this.list.forEach(element => {
+          if (element.checked) {
+            cacheList.push(element)
+          }
+        })
+        this.cacheList = cacheList
+      },
+      handleFilterProduct (categoryId) {
+        this.categoryId = categoryId
+        this.isRuleTrue = false
+        this.page = 1
+        this.list = []
+        this.getGoodList()
+      },
+      handleToggleType (type, index) {
+        if (index === 0) {
+          this.categoryId = ''
+          this.isRuleTrue = false
+          this.getGoodList()
+        } else {
+          this.listByOrder(type)
+        }
+      },
+      handleToggleFilter () {
+        this.listByOrder()
+        wx.nextTick(() => {
+          this.isRuleTrue = true
+        })
+      },
+      handleClosePopup () {
+        this.isRuleTrue = false
+        this.categoryId = ''
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/indentAdd/index.postcss';
+</style>

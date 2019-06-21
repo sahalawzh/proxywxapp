@@ -1,0 +1,35 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-invite">
+    <view class="invite-box">
+      <navigator url="/pages/inviteCode/index">
+        <button type="warn" class="font-size--32">二维码邀请</button>
+      </navigator>
+      <button type="warn" class="font-size--32 proxy-mt-30">分享链接邀请</button>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Invite extends wepy.page {
+    config = {
+      navigationBarTitleText: '邀请'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/invite/index.postcss';
+</style>

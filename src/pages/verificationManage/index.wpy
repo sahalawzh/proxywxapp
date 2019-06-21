@@ -1,0 +1,59 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-verification">
+    <view class="verification-search proxy-flex is-align-middle">
+      <view class="control-search">
+        <input type="number" class="font-size--28 input" confirm-type="search" bindconfirm="handleToSearch" placeholder-class="placeholder" placeholder="请输入订单号">
+      </view>
+      <view class="control-code proxy-flex is-align-middle is-justify-center" @tap.stop="handleToScan">
+        <image mode="aspectFill" class="icon-code" src="../../images/icon-code.png"></image>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import wxutils from '../../utils/wxutils'
+  export default class VerificationManage extends wepy.page {
+    config = {
+      navigationBarTitleText: '核销管理'
+    }
+    data = {
+    }
+    onLoad () {
+    }
+    methods = {
+      handleToSearch (e) {
+        const { value } = e.detail
+        if (value) {
+          wxutils.backOrNavigate('/pages/verificationDeatil/index?orderSn=' + value)
+        }
+      },
+      handleToScan () {
+        // 允许从相机和相册扫码
+        wx.scanCode({
+          success(res) {
+            const { errMsg, result } = res
+            if (errMsg === 'scanCode:ok') {
+              const scanArr = result.split('=')
+              wxutils.backOrNavigate('/pages/verificationDeatil/index?orderSn=' + scanArr[1])
+            }
+          },
+          fail (error) {
+            console.log(error)
+          }
+        })
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/verificationManage/index.postcss';
+</style>

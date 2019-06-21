@@ -1,0 +1,79 @@
+.page-withdraw {
+  .withdraw-header {
+    position: relative;
+    background: linear-gradient(to right, #fe846a, #e7281f);
+    height: 258rpx;
+    padding: 36rpx 28rpx 0 44rpx;
+    box-sizing: border-box;
+    color: #fff;
+    .value {
+      font-size: 100rpx;
+      margin-top: 12rpx;
+    }
+    .withdraw-btn {
+      position: absolute;
+      right: 28rpx;
+      bottom: 69rpx;
+      width: 154rpx;
+      height: 60rpx;
+      background:rgba(255,255,255,1);
+      border-radius:33px;
+      color: #E51E17;
+    }
+  }
+  .withdraw-content {
+    position: relative;
+    padding: 0 18rpx 0 30rpx;
+    &::before {
+      content: '';
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 28rpx;
+      background-color: #F3F4F5;
+    }
+    .item {
+      position: relative;
+      height: 215rpx;
+      padding: 22rpx 0 18rpx;
+      box-sizing: border-box;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 12rpx;
+        right: 18rpx;
+        width: 100%;
+        height: 1rpx;
+        transform: scaleY(0.5);
+        background-color: #EDEDED;
+      }
+      &-img {
+        width: 193rpx;
+        height: 176rpx;
+        position: absolute;
+        left: 0;
+        top: 22rpx;
+        background-color: #fff;
+        opacity: 0.2;
+      }
+      &-info {
+        flex: 1;
+        padding-left: 239rpx;
+        color: #333;
+        .title {
+          margin-top: 10rpx;
+        }
+        .name {
+          margin: 18rpx 0;
+          text {
+            padding-left: 48rpx;
+          }
+        }
+        .address {
+          color: #666;
+        }
+      }
+    }
+  }
+}

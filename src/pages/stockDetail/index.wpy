@@ -1,0 +1,95 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-stockDetail">
+    <view class="stock-detail" wx:if="{{detail}}">
+      <view class="stock-detail__content">
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">商品编码</view>
+          <view class="font-size--28 value">{{ detail.goodsId }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">商品名称</view>
+          <view class="font-size--28 value">{{ detail.goodsName }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">品类</view>
+          <view class="font-size--28 value">{{ detail.categoryName }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">商品规格</view>
+          <view class="font-size--28 value">{{ detail.specifications }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">库存数量</view>
+          <view class="font-size--28 value">{{ detail.stockNum }}</view>
+        </view>
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">库存状态</view>
+          <view class="font-size--28 value">{{ statusTag }}</view>
+        </view>
+      </view>
+
+      <view class="stock-detail__status">
+        <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <view class="font-size--32 label">是否可用</view>
+          <switch checked="{{ detail.status }}" bindchange="switch1Change" disabled/>
+        </view>
+      </view>
+
+      <view class="stock-detail_images">
+        <view class="item">
+          <view class="font-size--32 label">商品图片</view>
+          <view>
+            <image mode="aspectFill" class="img" src="{{ detail.picUrl }}"/>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class StockDetail extends wepy.page {
+    config = {
+      navigationBarTitleText: '库存详情'
+    }
+    data = {
+      detail: ''
+    }
+    onLoad () {
+      wx.getStorage({
+        key: 'stockDetail',
+        success: (res) => {
+          this.detail = res.data
+        }
+      })
+    }
+    computed = {
+      statusTag () {
+        const { detail } = this
+        if (+detail.stockNum <= 10) {
+          return '库存告急'
+        } else if (+detail.stockNum <= 100) {
+          return '库存不足'
+        } else {
+          return '库存正常'
+        }
+      }
+    }
+    methods = {
+    }
+    onUnload () {
+      wx.removeStorage({
+        key: 'stockDetail'
+      })
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/stockDetail/index.postcss';
+</style>

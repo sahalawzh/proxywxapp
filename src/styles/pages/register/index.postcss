@@ -1,0 +1,70 @@
+.page-register {
+  .register-header {
+    .icon {
+      width: 220rpx;
+      height: 220rpx;
+      margin: 50rpx auto 60rpx;
+      display: block;
+      border-radius: 50%;
+    }
+  }
+  .register-box {
+    padding: 0 22rpx 0 26rpx;
+    color: #333;
+    &__title {
+      padding: 25rpx 0;
+      font-size: 34rpx;
+    }
+  }
+  .register-form {
+    position: relative;
+    &__item {
+      position: relative;
+      height: 88rpx;
+      &:not(:last-child)::after{
+        position: absolute;
+        content: "";
+        height: 1rpx;
+        width: 100%;
+        left: 0;
+        bottom: 0;
+        transform: scaleY(0.5);
+        background-color: #ededed;
+      }
+      .placeholder {
+        color: #999;
+        font-size: 28rpx;
+      }
+      .code-label {
+        position: absolute;
+        right: 18rpx;
+        color: #E51E17;
+      }
+    }
+  }
+  .register-upload {
+    position: relative;
+    padding: 56rpx 22rpx 0 26rpx;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 20rpx;
+      background-color: #f5f5f5;
+    }
+    .upload-label {
+      line-height: 1;
+    }
+    .icon-upload {
+      width: 372rpx;
+      height: 242rpx;
+      margin-left: 35rpx;
+      margin-bottom: 20rpx;
+    }
+  }
+  .register-btn {
+    padding: 65rpx 100rpx 80rpx;
+  }
+}
