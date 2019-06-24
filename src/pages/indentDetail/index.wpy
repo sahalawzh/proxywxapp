@@ -2,22 +2,22 @@
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-sellOrder">
     <view class="sellOrder-products">
+      <view class="proxy-flex store-item is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">入库仓库</view>
+        <block wx:if="{{order.orderStatus === 301}}">
+          <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
+            <view class="font-size--30 item-select proxy-flex is-align-middle">
+              <text class="tab-plane__label">{{ storeList[storeIndex].name }}</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up arrow"></text>
+                <text class="arrow-box__down arrow"></text>
+              </text>
+            </view>
+          </picker>
+        </block>
+        <view class="font-size--30" wx:else>{{goods[0].storehouseList[storeIndex].name}}</view>
+      </view>
       <view class="sellOrder-products__item" wx:for="{{goods}}" wx:key="index">
-        <view class="proxy-flex store-item is-align-middle is-justify-space-between">
-          <view class="font-size--32 label">入库仓库</view>
-          <block wx:if="{{order.orderStatus === 301}}">
-            <picker bindchange="bindPickerChange" data-index="{{index}}" value="{{item.index}}" range-key="name" range="{{item.storehouseList}}">
-              <view class="font-size--30 item-select proxy-flex is-align-middle">
-                <text class="tab-plane__label">{{ storeList[item.index].name }}</text>
-                <text class="arrow-box">
-                  <text class="arrow-box__up arrow"></text>
-                  <text class="arrow-box__down arrow"></text>
-                </text>
-              </view>
-            </picker>
-          </block>
-          <view class="font-size--30" wx:else>{{item.storehouseList[item.index].name}}</view>
-        </view>
         <view class="proxy-flex product-item">
           <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
           <view class="product-content">
@@ -129,7 +129,8 @@
         112: '审核不通过',
         401: '已收货'
       },
-      storeList: []
+      storeList: [],
+      storeIndex: 0
     }
     computed = {
       qty () {
@@ -195,7 +196,7 @@
     bindPickerChange (e) {
       const { value } = e.detail
       const { index } = e.target.dataset
-      this.goods[index].index = +value
+      this.storeIndex = +value
       this.goods[index].stockhouseId = this.storeList[+value].id
     }
     async handleCreat (orderId) {

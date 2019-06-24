@@ -5,7 +5,7 @@
       <navigator url="/pages/inviteCode/index">
         <button type="warn" class="font-size--32">二维码邀请</button>
       </navigator>
-      <button type="warn" class="font-size--32 proxy-mt-30">分享链接邀请</button>
+      <button open-type="share" type="warn" class="font-size--32 proxy-mt-30">分享链接邀请</button>
     </view>
   </view>
 </template>
@@ -19,6 +19,15 @@
     data = {
     }
     onLoad () {
+    }
+    onShareAppMessage () {
+      let code = wepy.$instance.globalData.userInfo.inviterCode
+      console.log(code)
+      return {
+        title: '加入韦尔斯',
+        imageUrl: '../../images/test.png',
+        path: 'pages/register/index?code=' + code
+      }
     }
     methods = {
     }

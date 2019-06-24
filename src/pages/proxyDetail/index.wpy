@@ -24,7 +24,8 @@
       <view class="proxy-detail__status">
         <view class="item proxy-flex is-align-middle is-justify-space-between">
           <view class="font-size--32 label">是否可核销</view>
-          <switch checked="{{detail.status}}" disabled/>
+          <view class="font-size--28 value">{{ detail.selfDraw ? '可以' : '不可以' }}</view>
+          <!-- <switch checked="{{detail.status}}" disabled/> -->
         </view>
       </view>
 

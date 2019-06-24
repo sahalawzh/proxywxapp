@@ -53,12 +53,12 @@
         <view class="label">盘点管理</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
       </navigator>
-      <navigator url="/pages/performanceList/index" class="nav-list__item proxy-flex is-align-middle">
+      <navigator url="" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
         <image class="icon-nav" src="../../images/icon-performance.png" mode="aspectFill"></image>
         <view class="label">业务员业绩报表</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
       </navigator>
-      <navigator url="/pages/verificationManage/index" class="nav-list__item proxy-flex is-align-middle">
+      <navigator url="" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
         <image class="icon-nav" src="../../images/icon-net.png" mode="aspectFill"></image>
         <view class="label">进销存统计</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>

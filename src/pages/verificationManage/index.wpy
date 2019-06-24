@@ -15,6 +15,7 @@
 <script>
   import wepy from 'wepy'
   import wxutils from '../../utils/wxutils'
+  import orderApis from '../../api/order'
   export default class VerificationManage extends wepy.page {
     config = {
       navigationBarTitleText: '核销管理'
@@ -23,12 +24,22 @@
     }
     onLoad () {
     }
+    async detailBySn (orderSn) {
+      try {
+        const opts = {
+          orderSn
+        }
+        await orderApis.detailBySn(opts)
+        wxutils.backOrNavigate('/pages/verificationDeatil/index?orderSn=' + orderSn)
+        this.$apply()
+      } catch (error) {
+        console.log(error)
+      }
+    }
     methods = {
       handleToSearch (e) {
         const { value } = e.detail
-        if (value) {
-          wxutils.backOrNavigate('/pages/verificationDeatil/index?orderSn=' + value)
-        }
+        this.detailBySn(value)
       },
       handleToScan () {
         // 允许从相机和相册扫码

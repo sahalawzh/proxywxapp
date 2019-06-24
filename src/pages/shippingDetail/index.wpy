@@ -3,19 +3,19 @@
   <view class="page-contain page-sellOrder">
     <form bindsubmit="handleSubmitForm">
       <view class="sellOrder-products">
+        <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{order.orderStatus === 111}}">
+          <view class="font-size--32 label">出货仓库</view>
+          <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
+            <view class="font-size--30 item-select proxy-flex is-align-middle">
+              <text class="tab-plane__label">{{ goods[0].storehouseList[storeIndex].name }}</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up arrow"></text>
+                <text class="arrow-box__down arrow"></text>
+              </text>
+            </view>
+          </picker>
+        </view>
         <view class="sellOrder-products__item" wx:for="{{goods}}" wx:key="index">
-          <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{order.orderStatus === 111}}">
-            <view class="font-size--32 label">出货仓库</view>
-            <picker bindchange="bindPickerChange" data-index="{{index}}" value="{{item.index}}" range-key="name" range="{{item.storehouseList}}">
-              <view class="font-size--30 item-select proxy-flex is-align-middle">
-                <text class="tab-plane__label">{{ item.storehouseList[item.index].name }}</text>
-                <text class="arrow-box">
-                  <text class="arrow-box__up arrow"></text>
-                  <text class="arrow-box__down arrow"></text>
-                </text>
-              </view>
-            </picker>
-          </view>
           <view class="proxy-flex product-item" :class="{'no-store': order.orderStatus !== 111}">
             <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
             <view class="product-content">
@@ -23,7 +23,7 @@
               <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
               <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
                 <view>{{ item.specifications }}</view>
-                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabed}}" max="{{ item.storehouseList[item.index].message }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabed}}" max="{{ goods[0].storehouseList[storeIndex].number }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
               </view>
               <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
             </view>
@@ -66,7 +66,7 @@
         </view>
         <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
           <view class="label font-size--32">备注</view>
-          <view class="value font-size--28">{{ order.comments }}</view>
+          <view class="value font-size--28">{{ order.message }}</view>
         </view>
       </view>
 
@@ -118,7 +118,8 @@
         301: '待收货',
         112: '审核不通过',
         401: '已收货'
-      }
+      },
+      storeIndex: 0
     }
     computed = {
       totalPrice () {
@@ -158,11 +159,11 @@
         const { data } = await brandOrderApis.detail(opts)
         data.orderGoods.forEach(item => {
           item.sum = accMul(item.price, item.number)
-          let storeIndex = item.storehouseList.findIndex(function (store) {
-            return store.id === item.outStockhouseId
-          })
-          item.index = storeIndex === -1 ? 0 : storeIndex
         })
+        let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
+          return store.id === data.orderGoods[0].outStockhouseId
+        })
+        this.storeIndex = storeIndex === -1 ? 0 : storeIndex
         this.order = data.order
         this.goods = data.orderGoods
         this.$apply()
@@ -178,9 +179,10 @@
     }
     bindPickerChange (e) {
       const { value } = e.detail
-      const { index } = e.target.dataset
-      this.goods[index].index = +value
-      this.goods[index].outStockhouseId = this.goods[index].storehouseList[+value].id
+      this.storeIndex = +value
+      this.goods.forEach(item => {
+        item.outStockhouseId = this.goods[0].storehouseList[+value].id
+      })
     }
     verification (formData, orderStatus) {
       let { shipSn, shipChannel, actualPrice } = formData
@@ -243,6 +245,15 @@
       }
     }
     methods = {
+      handleDisableQty (e) {
+        if (e.detail.trigger === 2) {
+          wx.showToast({
+            title: '库存不足',
+            icon: 'none',
+            duration: 2000
+          })
+        }
+      },
       async hanldeRejected () {
         try {
           wx.showLoading({

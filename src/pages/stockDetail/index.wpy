@@ -32,7 +32,8 @@
       <view class="stock-detail__status">
         <view class="item proxy-flex is-align-middle is-justify-space-between">
           <view class="font-size--32 label">是否可用</view>
-          <switch checked="{{ detail.status }}" bindchange="switch1Change" disabled/>
+          <!-- <switch checked="{{ detail.status }}" bindchange="switch1Change" disabled="{{ true }}"/> -->
+          <view class="font-size--28 value">{{ detail.status ? '可用' : '不可用' }}</view>
         </view>
       </view>
 

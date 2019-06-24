@@ -110,6 +110,7 @@
   import goodApis from '../../api/good'
   import Search from '../../components/search'
   import wxutils from '../../utils/wxutils'
+  import deepCopy from '../../utils/deepCopy'
   import brandOrderApis from '../../api/brandOrder'
   export default class IndentAdd extends wepy.page {
     config = {
@@ -252,13 +253,18 @@
           title: '加载中',
           mask: true
         })
+        let goodsList = deepCopy(saveItems)
+        goodsList.forEach(element => {
+          element.number = 1
+        })
         const opts = {
-          goodsList: saveItems,
-          brandOrder: {},
-          orderStatus: -1
+          goodsList,
+          brandOrder: {
+            orderStatus: -1
+          }
         }
-        await brandOrderApis.submit(opts)
-        wxutils.backOrNavigate('/pages/indentPay/index')
+        const { data } = await brandOrderApis.submit(opts)
+        wxutils.backOrNavigate('/pages/indentPay/index?orderId=' + data.orderId)
         this.$apply()
         wx.hideLoading()
       } catch (error) {

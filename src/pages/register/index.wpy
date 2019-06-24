@@ -10,8 +10,8 @@
         <view class="register-form">
           <view class="register-form__item proxy-flex is-align-middle font-size--30">
             <view>手机号：</view>
-            <view>{{ mobile }}</view>
-            <!-- <input type="number" placeholder-class="placeholder" placeholder="请输入手机号码"> -->
+            <!-- <view>{{ mobile }}</view> -->
+            <input type="number" name="mobile" placeholder-class="placeholder" placeholder="请输入手机号码">
           </view>
           <view class="register-form__item proxy-flex is-align-middle font-size--30">
             <view>密码：</view>
@@ -69,20 +69,21 @@
     data = {
       uploadImgs: [],
       agentName: '',
-      agentCode: '',
-      mobile: ''
+      agentCode: ''
+      // mobile: ''
     }
-    async getInviteCode (saveItems) {
+    async getInviteCode (code) {
       try {
         wx.showLoading({
           title: '加载中',
           mask: true
         })
         const opts = {
-          code: this.agentCode
+          code
         }
         const { data } = await adminApis.brandinfo(opts)
         this.agentName = data.agentName
+        this.agentCode = code
         this.$apply()
         wx.hideLoading()
       } catch (error) {
@@ -97,13 +98,12 @@
         options = parseQueryString(urlObj)
       }
       if (options.code) {
-        this.agentCode = options.code
-        this.getBrandinfo()
+        this.getInviteCode(options.code)
       }
-      this.mobile = wepy.$instance.globalData.userInfo.mobile
+      // this.mobile = wepy.$instance.globalData.userInfo.mobile
     }
     verification (verifyData) {
-      let { address, password, shop } = verifyData
+      let { address, password, shop, mobile } = verifyData
       const errVaild = {
         vaild: true,
         msg: ''
@@ -111,6 +111,11 @@
       if (this.uploadImgs.length < 1) {
         errVaild.vaild = false
         errVaild.msg = '还没有上传资质'
+        return errVaild
+      }
+      if (!mobile) {
+        errVaild.vaild = false
+        errVaild.msg = '手机号码不能为空'
         return errVaild
       }
       if (!password) {
@@ -142,23 +147,24 @@
           return
         }
         try {
-          let {address = '', password = '', shop = ''} = verifyData
+          let {address = '', password = '', shop = '', mobile = ''} = verifyData
           address = address.trim()
           password = password.trim()
+          mobile = mobile.trim()
           shop = shop.trim()
           wx.showLoading({
             title: '提交中',
             mask: true
           })
-          const { uploadImgs, agentName, agentCode } = this
+          const { uploadImgs, agentCode } = this
           const opts = {
-            agent_name: agentName,
-            mobile: '',
+            agentName: shop,
+            mobile,
             password,
-            shop_name: shop,
+            shopName: shop,
             address,
             aptitude: uploadImgs,
-            code: agentCode
+            parentCode: agentCode
           }
           await brandApis.brandEdit(opts)
           wxutils.backOrRedirect('/pages/index/index')
