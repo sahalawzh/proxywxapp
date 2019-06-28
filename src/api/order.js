@@ -13,7 +13,7 @@ export default class order extends base {
    * 提交核销
    */
   static verif (opts) {
-    return this.post(`order/verif`, opts)
+    return this.post(`order/verif?`+ opts)
   }
   /**
    * 销售列表
@@ -26,5 +26,11 @@ export default class order extends base {
    */
   static detail (opts) {
     return this.get(`order/detail`, opts)
+  }
+  /**
+   * 核销列表
+   */
+  static verifList (opts) {
+    return this.get(`order/verifList`, opts)
   }
 }

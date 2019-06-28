@@ -189,7 +189,7 @@ export default class http {
       throw wx.showModal({
         title: '提示',
         showCancel: false,
-        content: res.data.errmsg || '请求超时',
+        content: res.data.errmsg || '系统繁忙',
         success(res) {
           console.log(res)
         }

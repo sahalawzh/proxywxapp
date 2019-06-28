@@ -10,7 +10,7 @@
             <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
             <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
               <view>{{ item.specifications }}</view>
-              <proxy-stepper width="48rpx" height="46rpx" max="{{ item.stock }}" @stepperDisableTap.stop="handleDisableQty" data-index="{{ index }}" value="{{ item.qty }}" @changenumber.stop="changeQty"></proxy-stepper>
+              <proxy-stepper width="48rpx" height="46rpx" max="{{ maxStock }}" @stepperDisableTap.stop="handleDisableQty" data-index="{{ index }}" value="{{ item.qty }}" @changenumber.stop="changeQty"></proxy-stepper>
             </view>
             <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
           </view>
@@ -39,19 +39,19 @@
       <view class="sellOrder-info font-size--32">
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>收货人:</view>
-          <input class="font-size--28 value" maxLength="10" val="{{orderInfo.adminName}}" name="consignee" type="text" placeholder-class="placeholder" placeholder="请输入收货人">
+          <input class="font-size--28 value" maxLength="10" value="{{orderInfo.consignee}}" name="consignee" type="text" placeholder-class="placeholder" placeholder="请输入收货人">
         </view>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>地址:</view>
-          <input class="font-size--28 value" name="address" type="text" placeholder-class="placeholder" placeholder="请输入地址">
+          <input class="font-size--28 value" name="address" value="{{orderInfo.address}}" type="text" placeholder-class="placeholder" placeholder="请输入地址">
         </view>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>备注:</view>
-          <input class="font-size--28 value" name="message" type="text" placeholder-class="placeholder" placeholder="请输入备注">
+          <input class="font-size--28 value" name="message" value="{{orderInfo.message}}" type="text" placeholder-class="placeholder" placeholder="请输入备注">
         </view>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>联系电话:</view>
-          <input class="font-size--28 value" name="mobile" type="number" placeholder-class="placeholder" placeholder="请输入手机号">
+          <input class="font-size--28 value" name="mobile" value="{{orderInfo.mobile}}" type="number" placeholder-class="placeholder" placeholder="请输入手机号">
         </view>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>应付金额:</view>
@@ -95,6 +95,15 @@
       this.getOrderDetail()
     }
     computed = {
+      maxStock () {
+        let result = 0
+        if (this.goodsList.length) {
+          this.goodsList[0].storehouseList.forEach(item => {
+            result += item.number
+          })
+        }
+        return result
+      },
       total () {
         let sum = 0
         this.goodsList.forEach(item => {
@@ -201,9 +210,9 @@
           })
           const opts = {
             goodsList,
-            brandOrder: {...orderInfo, ...formData}
+            brandOrder: {...orderInfo, ...formData, ...{orderStatus: 101}}
           }
-          await brandOrderApis.submit(opts)
+          await brandOrderApis.update(opts)
           wxutils.backOrRedirect('/pages/indentList/index?lastPage=indentPay')
           this.$apply()
           wx.hideLoading()

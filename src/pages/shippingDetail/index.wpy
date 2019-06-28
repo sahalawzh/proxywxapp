@@ -23,7 +23,7 @@
               <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
               <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
                 <view>{{ item.specifications }}</view>
-                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabed}}" max="{{ goods[0].storehouseList[storeIndex].number }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabled}}" max="{{ maxStock }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
               </view>
               <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
             </view>
@@ -74,16 +74,16 @@
         <block wx:if="{{order.orderStatus !== 101}}">
           <view class="sellOrder-info__item proxy-flex is-align-middle">
             <view>物流单号:</view>
-            <input class="font-size--28 value" disabled="{{disabed}}" name="shipSn" value="{{ order.shipSn }}" type="number" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入物流单号'}}">
+            <input class="font-size--28 value" disabled="{{disabled}}" name="shipSn" value="{{ order.shipSn }}" type="number" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入物流单号'}}">
           </view>
           <view class="sellOrder-info__item proxy-flex is-align-middle">
             <view>配送方式:</view>
-            <input class="font-size--28 value" disabled="{{disabed}}" name="shipChannel" value="{{ order.shipChannel }}" type="text" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入配送方式'}}">
+            <input class="font-size--28 value" disabled="{{disabled}}" name="shipChannel" value="{{ order.shipChannel }}" type="text" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入配送方式'}}">
           </view>
         </block>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>应付金额:</view>
-          <input class="font-size--28 value" disabled="{{disabed}}" name="actualPrice" value="{{ order.actualPrice }}" type="text" placeholder-class="placeholder" placeholder="{{disabed ? '' : '请输入付款金额'}}">
+          <input class="font-size--28 value" disabled="{{disabled}}" name="actualPrice" value="{{ order.actualPrice }}" type="text" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入付款金额'}}">
         </view>
       </view>
       
@@ -122,6 +122,15 @@
       storeIndex: 0
     }
     computed = {
+      maxStock () {
+        let result = 0
+        if (this.goods.length) {
+          this.goods[0].storehouseList.forEach(item => {
+            result += item.number
+          })
+        }
+        return result
+      },
       totalPrice () {
         if (this.goods.length) {
           let result = 0
@@ -132,7 +141,7 @@
         }
         return '0.00'
       },
-      disabed () {
+      disabled () {
         if (this.order.orderStatus === 101 || this.order.orderStatus === 111) {
           return false
         }

@@ -9,6 +9,10 @@
         <view class="register-box__title" wx:if="{{agentCode}}">邀请者：{{ agentName }}</view>
         <view class="register-form">
           <view class="register-form__item proxy-flex is-align-middle font-size--30">
+            <view>姓名：</view>
+            <input type="text" name="contacts" placeholder-class="placeholder" placeholder="请输入姓名">
+          </view>
+          <view class="register-form__item proxy-flex is-align-middle font-size--30">
             <view>手机号：</view>
             <!-- <view>{{ mobile }}</view> -->
             <input type="number" name="mobile" placeholder-class="placeholder" placeholder="请输入手机号码">
@@ -26,14 +30,17 @@
             <view>店铺名称：</view>
             <input type="text" name="shop" placeholder-class="placeholder" placeholder="请输入店铺名称">
           </view>
-          <view class="register-form__item proxy-flex is-align-middle font-size--30">
+          <view class="register-form__item proxy-flex is-align-middle is-justify-space-between font-size--30">
             <view>地址：</view>
-            <input type="text" name="address" placeholder-class="placeholder" placeholder="请输入地址">
+            <view class="address-box proxy-flex is-align-middle" @tap.stop="handleChooseLocation">
+              <view class="address-box__info" wx:if="{{ address }}">{{ address }}</view>
+              <view class="address-box__info" wx:else>点击获取当前位置</view>
+              <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+            </view>
           </view>
           <view class="register-form__item proxy-flex is-align-middle font-size--30">
             <view class="font-size--32">邀请码：</view>
             <view>{{ agentCode }}</view>
-            <!-- <input type="number" name="code" placeholder-class="placeholder" placeholder="请输入邀请码（选填）"> -->
           </view>
         </view>
 
@@ -44,7 +51,34 @@
           <block wx:if="{{uploadImgs.length}}">
             <image mode="aspectFill" wx:for="{{uploadImgs}}" wx:key="index" class="icon-upload" src="{{ item }}"></image>
           </block>
-          <image @tap.stop="handleAddImage" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
+          <image @tap.stop="handleAddImage({{'license'}})" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
+        </view>
+      </view>
+      <view class="register-upload proxy-flex">
+        <view class="font-size--32 upload-label">营业执照</view>
+        <view>
+          <block wx:if="{{businessUploadImgs.length}}">
+            <image mode="aspectFill" wx:for="{{businessUploadImgs}}" wx:key="index" class="icon-upload" src="{{ item }}"></image>
+          </block>
+          <image @tap.stop="handleAddImage({{'business'}})" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
+        </view>
+      </view>
+       <view class="register-upload proxy-flex">
+        <view class="font-size--32 upload-label">门店招牌</view>
+        <view>
+          <block wx:if="{{shopUploadImgs.length}}">
+            <image mode="aspectFill" wx:for="{{shopUploadImgs}}" wx:key="index" class="icon-upload" src="{{ item }}"></image>
+          </block>
+          <image @tap.stop="handleAddImage({{'shop'}})" wx:if="{{shopUploadImgs.length < 1}}" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
+        </view>
+      </view>
+       <view class="register-upload proxy-flex">
+        <view class="font-size--32 upload-label">身份证正反面</view>
+        <view>
+          <block wx:if="{{cardUploadImgs.length}}">
+            <image mode="aspectFill" wx:for="{{cardUploadImgs}}" wx:key="index" class="icon-upload" src="{{ item }}"></image>
+          </block>
+          <image @tap.stop="handleAddImage({{'idCard'}})" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
         </view>
       </view>
 
@@ -69,8 +103,11 @@
     data = {
       uploadImgs: [],
       agentName: '',
-      agentCode: ''
-      // mobile: ''
+      agentCode: '',
+      address: '',
+      businessUploadImgs: [],
+      shopUploadImgs: [],
+      cardUploadImgs: []
     }
     async getInviteCode (code) {
       try {
@@ -100,17 +137,32 @@
       if (options.code) {
         this.getInviteCode(options.code)
       }
-      // this.mobile = wepy.$instance.globalData.userInfo.mobile
     }
     verification (verifyData) {
-      let { address, password, shop, mobile } = verifyData
+      let { password, shop, mobile, contacts } = verifyData
+      const { address } = this
       const errVaild = {
         vaild: true,
         msg: ''
       }
       if (this.uploadImgs.length < 1) {
         errVaild.vaild = false
-        errVaild.msg = '还没有上传资质'
+        errVaild.msg = '还没有上传营业执照'
+        return errVaild
+      }
+      if (this.shopUploadImgs.length < 1) {
+        errVaild.vaild = false
+        errVaild.msg = '还没有上传门店招牌'
+        return errVaild
+      }
+      if (this.cardUploadImgs.length < 2) {
+        errVaild.vaild = false
+        errVaild.msg = '还没有上传身份证正反俩面'
+        return errVaild
+      }
+      if (!contacts) {
+        errVaild.vaild = false
+        errVaild.msg = '姓名不能为空'
         return errVaild
       }
       if (!mobile) {
@@ -136,6 +188,22 @@
       return errVaild
     }
     methods = {
+      handleChooseLocation () {
+        // 地图选择
+        const that = this
+        wx.chooseLocation({
+          success: function (res) {
+            that.address = res.address
+            that.$apply()
+          },
+          fail: function () {
+            wx.showToast({
+              title: '获取地图失败',
+              icon: 'none'
+            })
+          }
+        })
+      },
       async handleRegister (e) {
         let verifyData = e.detail.value
         const errVaild = this.verification(verifyData)
@@ -147,23 +215,27 @@
           return
         }
         try {
-          let {address = '', password = '', shop = '', mobile = ''} = verifyData
-          address = address.trim()
+          let {password = '', shop = '', mobile = '', contacts = ''} = verifyData
           password = password.trim()
           mobile = mobile.trim()
           shop = shop.trim()
+          contacts = contacts.trim()
           wx.showLoading({
             title: '提交中',
             mask: true
           })
-          const { uploadImgs, agentCode } = this
+          const { uploadImgs, address, agentCode, businessUploadImgs, shopUploadImgs, cardUploadImgs } = this
           const opts = {
             agentName: shop,
+            contacts,
             mobile,
             password,
             shopName: shop,
             address,
             aptitude: uploadImgs,
+            businessLicense: businessUploadImgs,
+            picUrl: shopUploadImgs.join(),
+            idcardUrl: cardUploadImgs,
             parentCode: agentCode
           }
           await brandApis.brandEdit(opts)
@@ -175,14 +247,19 @@
           wx.hideLoading()
         }
       },
-      handleAddImage () {
+      handleAddImage (type) {
         const that = this
         wx.chooseImage({
           count: 1,
           success: function(res) {
             const { errMsg, tempFilePaths } = res
             if (errMsg === 'chooseImage:ok') {
-              const MAX = 5
+              let MAX = 5
+              if (type === 'idCard') {
+                MAX = 2
+              } else if (type === 'shop') {
+                MAX = 1
+              }
               if (that.uploadImgs.length <= MAX) {
                 wx.showLoading({
                   title: '上传中',
@@ -198,7 +275,22 @@
                   },
                   success: function (res) {
                     const { url } = JSON.parse(res.data).data
-                    that.uploadImgs = that.uploadImgs.concat(url)
+                    switch (type) {
+                      case 'license':
+                        that.uploadImgs = that.uploadImgs.concat(url)
+                        break
+                      case 'business':
+                        that.businessUploadImgs = that.businessUploadImgs.concat(url)
+                        break
+                      case 'shop':
+                        that.shopUploadImgs = that.shopUploadImgs.concat(url)
+                        break
+                      case 'idCard':
+                        that.cardUploadImgs = that.cardUploadImgs.concat(url)
+                        break
+                      default:
+                        break
+                    }
                     wx.hideLoading()
                     that.$apply()
                   },

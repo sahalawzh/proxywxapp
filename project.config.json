@@ -45,7 +45,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 1,
+			"current": 10,
 			"list": [
 				{
 					"id": 0,
@@ -58,7 +58,7 @@
 					"id": 1,
 					"name": "注册",
 					"pathName": "pages/register/index",
-					"query": "code=1sdfsd",
+					"query": "code=op163U",
 					"scene": null
 				},
 				{
@@ -72,7 +72,7 @@
 					"id": 3,
 					"name": "核销详情",
 					"pathName": "pages/verificationDeatil/index",
-					"query": "orderSn=20190613699266",
+					"query": "orderSn=20190625441643",
 					"scene": null
 				},
 				{
@@ -118,10 +118,10 @@
 					"scene": null
 				},
 				{
-					"id": 5,
+					"id": 10,
 					"name": "确认订单",
 					"pathName": "pages/indentPay/index",
-					"query": "",
+					"query": "orderId=40",
 					"scene": null
 				},
 				{

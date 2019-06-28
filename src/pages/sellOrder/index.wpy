@@ -21,8 +21,8 @@
         <view class="value font-size--28">{{ order.orderSn }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单积分</view>
-        <view class="value font-size--28">{{ order.requiredIntegral }}</view>
+        <view class="label font-size--32">订单{{ order.isIntegralOrder ? '积分' : '金额' }}</view>
+        <view class="value font-size--28">{{ order.isIntegralOrder ? order.requiredIntegral : order.actualPrice }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">制单日期</view>

@@ -17,21 +17,16 @@
               </view>
             </picker>
           </view>
-          <view class="item proxy-flex is-align-middle is-justify-space-between">
+          <navigator url="/pages/takeGoods/index?storehouseId={{storeList[this.index].id}}" class="item proxy-flex is-align-middle is-justify-space-between">
             <view class="font-size--32 label">货物名称</view>
-            <picker bindchange="bindPickerChangeGood" value="{{goodIndex}}" range="{{goodName}}">
-              <view class="font-size--30 item-select proxy-flex is-align-middle">
-                <text class="tab-plane__label">{{ goodName[goodIndex] }}</text>
-                <text class="arrow-box">
-                  <text class="arrow-box__up arrow"></text>
-                  <text class="arrow-box__down arrow"></text>
-                </text>
-              </view>
-            </picker>
-          </view>
+            <view class="proxy-flex is-align-middle">
+              <text class="font-size--28 value" wx:if="{{goodItem.goodsName}}">{{ goodItem.goodsName }}</text>
+              <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+            </view>
+          </navigator>
           <view class="item proxy-flex is-align-middle is-justify-space-between">
             <view class="font-size--32 label">库存数量</view>
-            <view class="font-size--28 value">{{ goodList[goodIndex].stockNum }}</view>
+            <view class="font-size--28 value">{{ goodItem.stockNum }}</view>
           </view>
           <view class="item proxy-flex is-align-middle is-justify-space-between">
             <view class="font-size--32 label">盘点数量：</view>
@@ -43,11 +38,11 @@
           </view>
           <view class="item proxy-flex is-align-middle is-justify-space-between">
             <view class="font-size--32 label">盘点开始时间</view>
-            <view class="font-size--28 value">{{ goodList[goodIndex].updateTie }}</view>
+            <view class="font-size--28 value">{{ goodItem.updateTie }}</view>
           </view>
           <view class="item proxy-flex is-align-middle is-justify-space-between">
             <view class="font-size--32 label">盘点人</view>
-            <input class="font-size--28 value value-control" name="mUserName" type="text" placeholder-class="placeholder" placeholder="请输入盘点人">
+            <input class="font-size--28 value value-control" name="mUserName" value="{{userName}}" disabled="{{true}}" type="text" placeholder-class="placeholder" placeholder="请输入盘点人">
           </view>
         </view>
 
@@ -64,6 +59,7 @@
   import wepy from 'wepy'
   import stockApis from '../../api/stock'
   import wxutils from '../../utils/wxutils'
+  import isEmpty from '../../utils/isEmpty'
   export default class TakeCreat extends wepy.page {
     config = {
       navigationBarTitleText: '创建盘点'
@@ -71,8 +67,8 @@
     data = {
       storeList: [],
       index: 0,
-      goodList: [],
-      goodIndex: 0
+      goodItem: {},
+      userName: ''
     }
     computed = {
       storeName () {
@@ -81,39 +77,11 @@
           result.push(item.name)
         })
         return result
-      },
-      goodName () {
-        let result = []
-        this.goodList.forEach(item => {
-          result.push(item.goodsName)
-        })
-        return result
       }
     }
-    watch = {
-      storeList (val) {
-        this.handleGoodList()
-      }
-    }
-    async handleGoodList () {
-      try {
-        wx.showLoading({
-          title: '加载中',
-          mask: true
-        })
-        const opts = {
-          storehouseId: this.storeList[this.index].id,
-          page: 1,
-          limit: 2147483647
-        }
-        const { data } = await stockApis.list(opts)
-        this.goodList = data.items
-        this.$apply()
-        wx.hideLoading()
-      } catch (error) {
-        console.log(error)
-        wx.hideLoading()
-      }
+    handleTakeGood (item) {
+      this.goodItem = item
+      this.$apply()
     }
     async storehouseList () {
       try {
@@ -127,6 +95,7 @@
         }
         const { data } = await stockApis.storehouseList(opts)
         this.storeList = data
+        wepy.$instance.globalData.subpub.on('handleTakeGood', this.handleTakeGood, this)
         this.$apply()
         wx.hideLoading()
       } catch (error) {
@@ -136,12 +105,18 @@
     }
     onLoad () {
       this.storehouseList()
+      this.userName = wepy.$instance.globalData.userInfo.userName
     }
     verification (formData) {
       let { mSum, info, mUserName } = formData
       const errVaild = {
         vaild: true,
         msg: ''
+      }
+      if (isEmpty(this.goodItem)) {
+        errVaild.vaild = false
+        errVaild.msg = '还未选择货物名称'
+        return errVaild
       }
       if (!mSum) {
         errVaild.vaild = false
@@ -161,6 +136,10 @@
       return errVaild
     }
     methods = {
+      bindPickerChange (e) {
+        const { value } = e.detail
+        this.index = +value
+      },
       async handleToSubmit (e) {
         // mSum, info, mUserName
         const formData = e.detail.value
@@ -177,9 +156,9 @@
             title: '提交中',
             mask: true
           })
-          const { storeList, index, goodList, goodIndex } = this
+          const { storeList, index, goodItem } = this
           const { id, name } = storeList[index]
-          const { goodsId, goodsName, stockNum, id: stockId, updateTie } = goodList[goodIndex]
+          const { goodsId, goodsName, stockNum, id: stockId, updateTie } = goodItem
           const opts = {
             ...formData,
             storehouseId: id,
@@ -203,15 +182,6 @@
         wx.navigateBack({
           delta: 1
         })
-      },
-      bindPickerChange (e) {
-        const { value } = e.detail
-        this.index = +value
-        this.handleGoodList()
-      },
-      bindPickerChangeGood (e) {
-        const { value } = e.detail
-        this.goodIndex = +value
       }
     }
     onUnload () {

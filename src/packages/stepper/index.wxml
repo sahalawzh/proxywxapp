@@ -4,7 +4,7 @@
     <image class="jfk-stepper__minus jfk-stepper__control {{(disabled === 'true' || ivalue <= min) ? 'is-disabled' : ''}}" src="../../images/icon-reduce.png"  catch:tap="stepMinus"  mode="aspectFill"></image>
     <!-- <view class="jfk-stepper__minus jfk-stepper__control {{(disabled === 'true' || ivalue <= min) ? 'is-disabled' : ''}}" catch:tap="stepMinus" /> -->
     
-    <input class="jfk-stepper__text" style="height:{{height}};line-height: {{height}};width: {{width}};" type="number" bindchange="bindManual" value="{{ivalue}}" />  
+    <input class="jfk-stepper__text" style="height:{{height}};line-height: {{height}};width: {{width}};" type="number" bindchange="bindManual" disabled="{{ disabled === 'true' }}" value="{{ivalue}}" />  
     <!-- <view class="jfk-stepper__text" style="height:{{height}};line-height: {{height}};width: {{width}}; ">{{ivalue}}</view> -->
     
     <view class="jfk-stepper__plus jfk-stepper__control {{(disabled === 'true' || (max && ivalue >= max)) ? 'is-disabled' : ''}}" catch:tap="stepPlus">

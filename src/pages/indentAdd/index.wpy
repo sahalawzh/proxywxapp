@@ -56,7 +56,7 @@
           style="background-image: url({{ item.picUrl }})">
         </view>
         <view class="product-content proxy-flex is-justify-space-between">
-          <proxy-elip line="2" class="name font-size--28">{{ item.name }}测试测试测试测试测试测试</proxy-elip>
+          <proxy-elip line="2" class="name font-size--28">{{ item.name }}</proxy-elip>
           <view class="font-size--26 font-color-silver-common proxy-mt-30">库存：{{ item.number }}</view>
           <view class="proxy-flex is-align-bottom is-justify-space-between">
             <view class="font-size--24 unit">{{ item.skuName }}/{{ item.unit }}</view>

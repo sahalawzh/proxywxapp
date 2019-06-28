@@ -5,10 +5,8 @@
       <viewl class="sellOrder-products__item proxy-flex" wx:for="{{orderGoods}}" wx:key="index">
         <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
         <view class="product-content">
-          <view class="title">
-            <proxy-elip line="2" class="font-size--28">{{ item.goodsName }}</proxy-elip>
-          </view>
-          <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+          <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+          <view class="font-size--42 price">{{ item.price }}</view>
           <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
             <view>{{ item.specifications }}</view>
             <view>x{{ item.number }}</view>
@@ -23,8 +21,8 @@
         <view class="value font-size--28">{{ order.orderSn }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单积分</view>
-        <view class="value font-size--28">{{ order.orderSn }}</view>
+        <view class="label font-size--32">订单{{ order.isIntegralOrder ? '积分' : '金额' }}</view>
+        <view class="value font-size--28">{{ order.isIntegralOrder ? order.requiredIntegral : order.actualPrice }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">制单日期</view>
@@ -34,18 +32,21 @@
         <view class="label font-size--32">制单人</view>
         <view class="value font-size--28">{{ order.consignee }}</view>
       </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">订单状态</view>
+        <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
+      </view>
     </view>
 
     <view class="sellOrder-info font-size--32">
       <view class="sellOrder-info__item proxy-flex is-align-middle">
-        <view>备注:</view>
-        <view class="value">{{ order.comment }}</view>
+        <view>地址:</view>
+        <view class="value">{{ order.address }}</view>
       </view>
-    </view>
-
-    <view class="proxy-mt-30 footer">
-      <button size="mini" @tap.stop="hanldeCancel" class="open-type-btn font-size--30 footer-btn btn-border">取消</button>
-      <button size="mini" @tap.stop="hanldeAffirm" type="warn" class="open-type-btn font-size--30 footer-btn">确认核销</button>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>备注:</view>
+        <view class="value">{{ order.message }}</view>
+      </view>
     </view>
   </view>
 </template>
@@ -53,36 +54,44 @@
 <script>
   import wepy from 'wepy'
   import orderApis from '../../api/order'
-  import wxutils from '../../utils/wxutils'
-  import param from '../../utils/param'
-  export default class VerificationDeatil extends wepy.page {
+  export default class SellOrder extends wepy.page {
     config = {
-      navigationBarTitleText: '确认核销',
+      navigationBarTitleText: '核销详情',
       usingComponents: {
         'proxy-elip': '../../packages/elip/index'
       }
     }
     data = {
-      orderSn: '',
-      order: {},
-      orderGoods: [],
-      user: {}
+      id: '',
+      status: {
+        0: '全部订单',
+        101: '未付款',
+        102: '已取消',
+        103: '已取消(系统)',
+        201: '已付款',
+        202: '订单取消,退款中',
+        203: '已退款',
+        301: '已发货',
+        401: '已核销',
+        402: '已收货(系统)',
+        501: '已核销'
+      },
+      order: '',
+      orderGoods: []
     }
-    async detailBySn () {
+    async getSellDetail () {
       try {
         wx.showLoading({
           title: '加载中',
           mask: true
         })
-        const { orderSn } = this
         const opts = {
-          orderSn
+          id: this.id
         }
-        const { data } = await orderApis.detailBySn(opts)
-        const { order, orderGoods, user } = data
+        const { data } = await orderApis.detail(opts)
+        const { order, orderGoods } = data
         this.order = order
         this.orderGoods = orderGoods
-        this.user = user
         this.$apply()
         wx.hideLoading()
       } catch (error) {
@@ -90,35 +99,11 @@
         wx.hideLoading()
       }
     }
-    onLoad ({ orderSn }) {
-      this.orderSn = orderSn
-      this.detailBySn()
+    onLoad ({ id }) {
+      this.id = id
+      this.getSellDetail()
     }
     methods = {
-      async hanldeAffirm () {
-        try {
-          wx.showLoading({
-            title: '核销中',
-            mask: true
-          })
-          const { id } = this.order
-          const opts = {
-            orderId: id
-          }
-          await orderApis.verif(param(opts))
-          wxutils.backOrRedirect('/pages/verificationManage/index')
-          this.$apply()
-          wx.hideLoading()
-        } catch (error) {
-          console.log(error)
-          wx.hideLoading()
-        }
-      },
-      hanldeCancel () {
-        wx.navigateBack({
-          delta: 1
-        })
-      }
     }
     onUnload () {
     }
@@ -129,5 +114,5 @@
   }
 </script>
 <style lang='postcss'>
-  @import 'src/styles/pages/verificationDeatil/index.postcss';
+  @import 'src/styles/pages/sellOrder/index.postcss';
 </style>

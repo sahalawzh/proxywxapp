@@ -1,0 +1,117 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-indentAdd">
+    <view class="nav">
+      <search></search>
+    </view>
+
+    <view class="goods-lists" wx:if="{{ list.length }}">
+      <view class="goods-lists__item proxy-flex" wx:for="{{list}}" wx:key="index" @tap.stop="handleToSelected({{item}}, {{index}})">
+        <view class="proxy-radio radio-box font-size--26 proxy-flex is-align-middle">
+          <lebel class="radio">
+            <image hidden='{{ !item.checked }}' class="ico_selected" src='../../images/icon-selected.png'></image>
+          </lebel>
+        </view>
+        <view class="proxy-background-image product-img"
+          style="background-image: url({{ item.picUrl }})">
+        </view>
+        <view class="product-content proxy-flex is-justify-center">
+          <proxy-elip line="2" class="name font-size--28">{{ item.goodsName }}</proxy-elip>
+          <!-- <view class="font-size--26 font-color-silver-common proxy-mt-30">库存：{{ item.number }}</view>
+          <view class="proxy-flex is-align-bottom is-justify-space-between">
+            <view class="font-size--24 unit">{{ item.skuName }}/{{ item.unit }}</view>
+            <view>
+              <text class="font-size--28 font-color-silver-common">拿货价：</text>
+              <text class="font-size--46 price"><text class="font-size--30">￥</text>{{ item.price }}</text>
+            </view>
+          </view> -->
+        </view>
+      </view>
+    </view>
+    <view class="goods-empty font-size--28" wx:else>暂无相关数据~</view>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import stockApis from '../../api/stock'
+  import Search from '../../components/search'
+  import wxutils from '../../utils/wxutils'
+  export default class IndentAdd extends wepy.page {
+    config = {
+      navigationBarTitleText: '选择商品',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
+    }
+    components = {
+      search: Search
+    }
+    data = {
+      storehouseId: '',
+      list: [],
+      name: ''
+    }
+    async handleGoodList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { storehouseId, name } = this
+        const opts = {
+          storehouseId,
+          page: 1,
+          limit: 2147483647
+        }
+        if (name) {
+          opts.name = name
+        }
+        const { data } = await stockApis.list(opts)
+        data.items.forEach(item => {
+          item.checked = false
+        })
+        this.list = data.items
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    events = {
+      handleToSearch (val) {
+        this.name = val
+        this.page = 1
+        this.handleGoodList()
+      },
+      handleEmptySearch () {
+        this.name = ''
+      }
+    }
+    onLoad ({ storehouseId }) {
+      this.storehouseId = storehouseId
+      this.handleGoodList()
+    }
+    methods = {
+      handleToSelected (item, index) {
+        this.list.forEach(element => {
+          element.checked = false
+        })
+        this.list[index].checked = !item.checked
+        wepy.$instance.globalData.subpub.emit('handleTakeGood', this.list[index])
+        wxutils.backOrNavigate('/pages/takeCreat/index')
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/takeGoods/index.postcss';
+</style>

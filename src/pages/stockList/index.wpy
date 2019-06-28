@@ -70,9 +70,9 @@
       order: 'desc',
       stockStatus: [
         {id: '', name: '库存状态'},
-        {id: 0, name: '库存高危'},
+        {id: 0, name: '库存告急'},
         {id: 1, name: '库存不足'},
-        {id: 2, name: '库存正常'}
+        {id: 2, name: '正常'}
       ],
       index: 0
     }

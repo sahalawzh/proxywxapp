@@ -69,12 +69,12 @@
     computed = {
       statusTag () {
         const { detail } = this
-        if (+detail.stockNum <= 10) {
+        if (+detail.stockStatus === 0) {
           return '库存告急'
-        } else if (+detail.stockNum <= 100) {
+        } else if (+detail.stockStatus === 1) {
           return '库存不足'
         } else {
-          return '库存正常'
+          return '正常'
         }
       }
     }

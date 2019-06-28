@@ -27,6 +27,7 @@ export default class extends wepy.app {
       'pages/stockDetail/index', // 库存详情
       'pages/takeManage/index', // 盘点管理
       'pages/takeDetail/index', // 盘点详情
+      'pages/takeGoods/index', // 盘点详情
       'pages/takeCreat/index', // 盘点创建
       'pages/index/index', // 首页
       'pages/person/index', // 个人中心
@@ -35,6 +36,7 @@ export default class extends wepy.app {
       'pages/exchangeDetail/index', // 交易详情
       'pages/verificationManage/index', // 核销管理
       'pages/verificationDeatil/index', // 核销详情
+      'pages/verifDetail/index', // 已核销详情
       'pages/indentList/index', // 订货列表
       'pages/indentAdd/index', // 添加订货
       'pages/indentPay/index', // 确认订货

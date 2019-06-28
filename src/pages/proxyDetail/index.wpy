@@ -74,7 +74,7 @@
     }
     methods = {
       handleToSubmit () {
-        const { name, contacts, mobile, address, status } = this.detail
+        // const { name, contacts, mobile, address, status } = this.detail
       },
       handleToCancel () {
         wx.navigateBack({

@@ -30,4 +30,32 @@
       color: #666;
     }
   }
+  .table {
+    &-tr {
+      height: 90rpx;
+      &__col:nth-child(1) {
+        width: 252rpx;
+      }
+      &__col:nth-child(2) {
+        width: 240rpx;
+        padding-right: 8rpx;
+      }
+      &__col:nth-child(3) {
+        width: 258rpx;
+      }
+    }
+    &-thead {
+      font-size: 30rpx;
+      height: 92rpx;
+      color: #333;
+      text-align: center;
+      &__td {
+        color: #666;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
 }

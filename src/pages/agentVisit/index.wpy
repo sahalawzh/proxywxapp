@@ -13,7 +13,9 @@
         </view>
         <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
           <view class="font-size--32 label">当前定位</view>
-          <view class="font-size--28" wx:if="{{address}}">{{ address }}</view>
+          <view class="font-size--28" wx:if="{{address}}">
+            <proxy-elip line="1">{{ address }}</proxy-elip>
+          </view>
           <view class="font-size--28" @tap.stop="handleChooseLocation" wx:else>点击获取当前位置</view>
         </view>
       </view>
@@ -41,7 +43,10 @@
   import visitApis from '../../api/visit'
   export default class VisitDetail extends wepy.page {
     config = {
-      navigationBarTitleText: '代理商拜访'
+      navigationBarTitleText: '代理商拜访',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
     }
     data = {
       uploadImgs: [],
