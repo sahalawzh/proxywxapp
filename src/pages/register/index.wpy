@@ -86,6 +86,15 @@
         <button type="warn" class="font-size--32" form-type="submit">提交注册</button>
       </view>
 
+      <proxy-popup class="popup-modal" locked="{{true}}" show-close="false">
+        <view class="confirm-box">
+          <view class="title font-size--36">温馨提示</view>
+          <view class="content font-size--36">提交成功, 等待审核...</view>
+          <navigator target="miniProgram" open-type="exit">
+            <button type="primary">确认</button>
+          </navigator>
+        </view>
+      </proxy-popup>
     </form>
   </view>
 </template>
@@ -93,12 +102,15 @@
 <script>
   import wepy from 'wepy'
   import brandApis from '../../api/brand'
-  import wxutils from '../../utils/wxutils'
+  // import wxutils from '../../utils/wxutils'
   import { parseQueryString } from '../../utils/utils'
   import adminApis from '../../api/admin'
   export default class register extends wepy.page {
     config = {
-      navigationBarTitleText: '注册'
+      navigationBarTitleText: '注册',
+      usingComponents: {
+        'proxy-popup': '../../packages/popup/index'
+      }
     }
     data = {
       uploadImgs: [],
@@ -146,6 +158,11 @@
         msg: ''
       }
       if (this.uploadImgs.length < 1) {
+        errVaild.vaild = false
+        errVaild.msg = '还没有上传资质'
+        return errVaild
+      }
+      if (this.businessUploadImgs.length < 1) {
         errVaild.vaild = false
         errVaild.msg = '还没有上传营业执照'
         return errVaild
@@ -239,7 +256,7 @@
             parentCode: agentCode
           }
           await brandApis.brandEdit(opts)
-          wxutils.backOrRedirect('/pages/index/index')
+          this.$wxpage.selectComponent('.popup-modal').show()
           wx.hideLoading()
           this.$apply()
         } catch (error) {
@@ -311,8 +328,10 @@
       }
     }
     onUnload () {
+      this.$wxpage.selectComponent('.popup-modal').hide()
     }
     onHide () {
+      this.$wxpage.selectComponent('.popup-modal').hide()
     }
     onShow () {
     }

@@ -39,8 +39,16 @@
       navigationBarTitleText: '绑定手机'
     }
     data = {
+      proxy: {}
     }
     onLoad () {
+      wx.getStorage({
+        key: 'proxy',
+        success: (res) => {
+          this.proxy = res.data
+          console.log(this.proxy)
+        }
+      })
     }
     methods = {
       getPhoneNumber (e) {
@@ -67,6 +75,12 @@
           mask: true
         })
         const { data } = await authApis.bindPhone(params)
+        wepy.$instance.globalData.brandInfo = data.brandInfo
+        let setData = {...this.proxy, ...{brandInfo: data.brandInfo}}
+        wx.setStorage({
+          key: 'proxy',
+          data: setData
+        })
         if (data.indexView) {
           wxutils.backOrRedirect('/pages/index/index')
         } else {

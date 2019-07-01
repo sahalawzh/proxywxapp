@@ -134,7 +134,8 @@
       currentTab: 'synthetical',
       order: 'desc',
       name: '',
-      cacheList: []
+      cacheList: [],
+      isNewAdd: false
     }
     async getGoodList () {
       try {
@@ -334,6 +335,10 @@
     onHide () {
     }
     onShow () {
+      console.log(this)
+      if (this.isNewAdd) {
+        wxutils.backOrNavigate('/pages/index/index')
+      }
     }
   }
 </script>

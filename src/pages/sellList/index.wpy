@@ -61,6 +61,7 @@
       search: Search
     }
     data = {
+      isFirst: false,
       page: 1,
       limit: 20,
       tableData: [],
@@ -70,15 +71,8 @@
       status: {
         0: '全部订单',
         101: '未付款',
-        102: '已取消',
-        103: '已取消(系统)',
         201: '已付款',
-        202: '订单取消,退款中',
-        203: '已退款',
-        301: '已发货',
-        401: '已收货',
-        402: '已收货(系统)',
-        501: '已核销'
+        301: '已发货'
       },
       index: 0,
       orderStatusArray: ''
@@ -110,6 +104,7 @@
           opts.orderSn = orderSn
         }
         const { data } = await orderApis.listBrand(opts)
+        this.isFirst = true
         if (page === 1) {
           tableData = []
         }
@@ -164,6 +159,9 @@
     onHide () {
     }
     onShow () {
+      if (this.isFirst) {
+        this.sellList()
+      }
     }
   }
 </script>

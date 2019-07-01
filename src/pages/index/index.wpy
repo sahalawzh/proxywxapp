@@ -84,7 +84,6 @@
     onLoad () {
       const { brandInfo } = wepy.$instance.globalData
       this.brandInfo = brandInfo
-      console.log(this.brandInfo)
     }
     methods = {
     }

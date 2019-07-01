@@ -1,59 +1,76 @@
 
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-sellOrder">
-    <view class="sellOrder-products">
-      <viewl class="sellOrder-products__item proxy-flex" wx:for="{{orderGoods}}" wx:key="index">
-        <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
-        <view class="product-content">
-          <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
-          <view class="font-size--42 price">{{ item.price }}</view>
-          <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
-            <view>{{ item.specifications }}</view>
-            <view>x{{ item.number }}</view>
+    <form bindsubmit="handleSubmitForm">
+      <view class="sellOrder-products">
+        <viewl class="sellOrder-products__item proxy-flex" wx:for="{{orderGoods}}" wx:key="index">
+          <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
+          <view class="product-content">
+            <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+            <view class="font-size--42 price">{{ order.isIntegralOrder ? item.integral + '积分' : item.price }}</view>
+            <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
+              <view>{{ item.specifications }}</view>
+              <view>x{{ item.number }}</view>
+            </view>
           </view>
+        </viewl>
+      </view>
+
+      <view class="sellOrder-list">
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订单号</view>
+          <view class="value font-size--28">{{ order.orderSn }}</view>
         </view>
-      </viewl>
-    </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订单{{ order.isIntegralOrder ? '积分' : '金额' }}</view>
+          <view class="value font-size--28">{{ order.isIntegralOrder ? order.requiredIntegral : order.actualPrice }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">制单日期</view>
+          <view class="value font-size--28">{{ order.addTime }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">收货人</view>
+          <view class="value font-size--28">{{ order.consignee }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">订单状态</view>
+          <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
+        </view>
+      </view>
 
-    <view class="sellOrder-list">
-      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单号</view>
-        <view class="value font-size--28">{{ order.orderSn }}</view>
+      <view class="sellOrder-info font-size--32">
+        <view class="sellOrder-info__item proxy-flex is-align-middle">
+          <view>地址:</view>
+          <view class="value">{{ order.orderStatus === 201 && !order.address ? '自提订单' : order.address }}</view>
+        </view>
+        <block wx:if="{{order.orderStatus === 201 || order.orderStatus === 301}}">
+          <view class="sellOrder-info__item proxy-flex is-align-middle">
+            <view>物流单号:</view>
+            <input class="font-size--28 value" name="shipSn" type="number" disabled="{{order.orderStatus === 301 || (order.orderStatus === 201 && !order.address)}}" value="{{ order.orderStatus === 201 && !order.address ? '自提订单' :  order.shipSn }}" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入物流单号'}}">
+          </view>
+          <view class="sellOrder-info__item proxy-flex is-align-middle">
+            <view>配送方式:</view>
+            <input class="font-size--28 value" name="shipChannel" type="text" disabled="{{order.orderStatus === 301 || (order.orderStatus === 201 && !order.address)}}" value="{{ order.orderStatus === 201 && !order.address ? '自提订单' :  order.shipChannel }}" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入配送方式'}}">
+          </view>
+        </block>
+        <view class="sellOrder-info__item proxy-flex is-align-middle">
+          <view>备注:</view>
+          <view class="value">{{ order.message }}</view>
+        </view>
       </view>
-      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单{{ order.isIntegralOrder ? '积分' : '金额' }}</view>
-        <view class="value font-size--28">{{ order.isIntegralOrder ? order.requiredIntegral : order.actualPrice }}</view>
-      </view>
-      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">制单日期</view>
-        <view class="value font-size--28">{{ order.addTime }}</view>
-      </view>
-      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">制单人</view>
-        <view class="value font-size--28">{{ order.consignee }}</view>
-      </view>
-      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单状态</view>
-        <view class="value font-size--28">{{ status[order.orderStatus] }}</view>
-      </view>
-    </view>
 
-    <view class="sellOrder-info font-size--32">
-      <view class="sellOrder-info__item proxy-flex is-align-middle">
-        <view>地址:</view>
-        <view class="value">{{ order.address }}</view>
+      <view class="footer" wx:if="{{order.orderStatus === 201 && order.address}}">
+        <button form-type="submit" size="mini" type="warn" class="open-type-btn font-size--30 footer-btn"> 发货 </button>
       </view>
-      <view class="sellOrder-info__item proxy-flex is-align-middle">
-        <view>备注:</view>
-        <view class="value">{{ order.message }}</view>
-      </view>
-    </view>
+    </form>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
   import orderApis from '../../api/order'
+  import wxutils from '../../utils/wxutils'
   export default class SellOrder extends wepy.page {
     config = {
       navigationBarTitleText: '销售订单',
@@ -66,15 +83,8 @@
       status: {
         0: '全部订单',
         101: '未付款',
-        102: '已取消',
-        103: '已取消(系统)',
         201: '已付款',
-        202: '订单取消,退款中',
-        203: '已退款',
-        301: '已发货',
-        401: '已收货',
-        402: '已收货(系统)',
-        501: '已核销'
+        301: '已发货'
       },
       order: '',
       orderGoods: []
@@ -103,7 +113,57 @@
       this.id = id
       this.getSellDetail()
     }
+    verification (formData, orderStatus) {
+      let { shipSn, shipChannel } = formData
+      const errVaild = {
+        vaild: true,
+        msg: ''
+      }
+      if (!shipSn) {
+        errVaild.vaild = false
+        errVaild.msg = '物流单号不能为空'
+        return errVaild
+      }
+      if (!shipChannel) {
+        errVaild.vaild = false
+        errVaild.msg = '配送方式不能为空'
+        return errVaild
+      }
+      return errVaild
+    }
     methods = {
+      async handleSubmitForm (e) {
+        const formData = e.detail.value
+        const errVaild = this.verification(formData)
+        let { shipSn = '', shipChannel = '' } = formData
+        shipSn = shipSn.trim()
+        shipChannel = shipChannel.trim()
+        if (!errVaild.vaild) {
+          wx.showToast({
+            title: errVaild.msg,
+            icon: 'none'
+          })
+          return
+        }
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          let opts = {
+            shipSn,
+            shipChannel,
+            orderId: this.id
+          }
+          await orderApis.ship(opts)
+          wxutils.backOrRedirect('/pages/sellList/index')
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      }
     }
     onUnload () {
     }

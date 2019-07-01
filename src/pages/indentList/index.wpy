@@ -157,6 +157,12 @@
     onLoad () {
       this.mobile = wepy.$instance.globalData.brandInfo.parentMobile
       this.getIndentList()
+      let pages = getCurrentPages() // 获取页面栈
+      var prevPage = pages[pages.length - 2] // 上一个页面
+      prevPage.setData({
+        isNewAdd: true
+      })
+      console.log(prevPage)
     }
     handleAddIndent () {
       this.getIndentList()

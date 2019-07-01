@@ -65,6 +65,7 @@
       tableData: [],
       order: 'desc',
       hasMoreData: false,
+      name: '',
       agentList: [],
       index: 0
     }
@@ -74,6 +75,7 @@
         this.agentList.forEach(item => {
           result.push(item.agentName)
         })
+        result.unshift('全部代理')
         return result
       }
     }
@@ -114,8 +116,10 @@
         const opts = {
           page,
           limit,
-          order,
-          brandId: agentList[index].id
+          order
+        }
+        if (index !== 0) {
+          opts.brandId = agentList[index - 1].id
         }
         if (name) {
           opts.name = name
@@ -140,6 +144,16 @@
     }
     onLoad () {
       this.handleAgentList()
+    }
+    events = {
+      handleToSearch (val) {
+        this.name = val
+        this.page = 1
+        this.visitList()
+      },
+      handleEmptySearch () {
+        this.name = ''
+      }
     }
     methods = {
       hanldeToTab (type) {

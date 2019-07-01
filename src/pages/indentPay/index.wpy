@@ -30,10 +30,10 @@
           <view class="label font-size--32">制单日期</view>
           <view class="value font-size--28">{{ orderInfo.addTime }}</view>
         </view>
-        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <!-- <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
           <view class="label font-size--32">制单人</view>
           <view class="value font-size--28">{{ orderInfo.adminName }}</view>
-        </view>
+        </view> -->
       </view>
 
       <view class="sellOrder-info font-size--32">
@@ -107,7 +107,7 @@
       total () {
         let sum = 0
         this.goodsList.forEach(item => {
-          sum = accAdd(sum, accMul(item.price, item.number))
+          sum = accAdd(sum, item.sum)
         })
         return sum || '0.00'
       }

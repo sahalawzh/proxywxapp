@@ -56,6 +56,7 @@
       search: Search
     }
     data = {
+      isFirst: false,
       page: 1,
       limit: 20,
       tableData: [],
@@ -89,6 +90,7 @@
           opts.name = name
         }
         const { data } = await stockApis.checkList(opts)
+        this.isFirst = true
         if (page === 1) {
           tableData = []
         }
@@ -131,6 +133,9 @@
     onHide () {
     }
     onShow () {
+      if (this.isFirst) {
+        this.checkList()
+      }
     }
   }
 </script>

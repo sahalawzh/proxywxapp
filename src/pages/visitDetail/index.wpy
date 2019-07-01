@@ -14,11 +14,19 @@
         <view class="font-size--32 label">拜访定位</view>
         <view class="font-size--28">{{ detail.address }}</view>
       </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">业务员</view>
+        <view class="font-size--28">{{ detail.intervieweeName }}</view>
+      </view>
+      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="font-size--32 label">拜访时间</view>
+        <view class="font-size--28">{{ detail.visitTime }}</view>
+      </view>
     </view>
     <view class="visit-upload proxy-flex">
       <view class="font-size--32 upload-label">拜访照片</view>
       <view>
-        <image mode="aspectFill" class="icon-upload" src="{{ detail.imgs }}"></image>
+        <image mode="aspectFill" class="icon-upload" @tap.stop="handleImagePreview({{detail.imgs}})" src="{{ detail.imgs }}"></image>
       </view>
     </view>
   </view>
@@ -42,6 +50,12 @@
       })
     }
     methods = {
+      handleImagePreview (img) {
+        wx.previewImage({
+          current: [img], // 当前预览的图片
+          urls: [img] // 所有要预览的图片
+        })
+      }
     }
     onUnload () {
       wx.removeStorage({

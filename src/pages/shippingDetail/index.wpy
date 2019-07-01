@@ -45,16 +45,16 @@
           <view class="value font-size--28">{{ order.addTime }}</view>
         </view>
         <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-          <view class="label font-size--32">制单人</view>
+          <view class="label font-size--32">收货人</view>
           <view class="value font-size--28">{{ order.consignee }}</view>
         </view>
         <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
           <view class="label font-size--32">联系电话</view>
           <view class="value font-size--28">{{ order.mobile }}</view>
         </view>
-        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between" wx:if="{{ order.orderStatus == 111 || order.orderStatus == 112 }}">
           <view class="label font-size--32">审核日期</view>
-          <view class="value font-size--28">{{ order.updateTime }}</view>
+          <view class="value font-size--28">{{ order.applyTime }}</view>
         </view>
         <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
           <view class="label font-size--32">订单状态</view>
@@ -194,7 +194,7 @@
       })
     }
     verification (formData, orderStatus) {
-      let { shipSn, shipChannel, actualPrice } = formData
+      let { actualPrice } = formData
       const errVaild = {
         vaild: true,
         msg: ''
@@ -206,16 +206,16 @@
           return errVaild
         }
       } else {
-        if (!shipSn) {
-          errVaild.vaild = false
-          errVaild.msg = '物流单号不能为空'
-          return errVaild
-        }
-        if (!shipChannel) {
-          errVaild.vaild = false
-          errVaild.msg = '配送方式不能为空'
-          return errVaild
-        }
+        // if (!shipSn) {
+        //   errVaild.vaild = false
+        //   errVaild.msg = '物流单号不能为空'
+        //   return errVaild
+        // }
+        // if (!shipChannel) {
+        //   errVaild.vaild = false
+        //   errVaild.msg = '配送方式不能为空'
+        //   return errVaild
+        // }
         if (!actualPrice) {
           errVaild.vaild = false
           errVaild.msg = '应付金额不能为空'

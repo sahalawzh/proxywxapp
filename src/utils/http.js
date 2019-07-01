@@ -125,7 +125,7 @@ export default class http {
         throw error
       }
     } else {
-      if (this.checkNeedLogin()) {
+      if (this.checkNeedLogin() && url !== '/admin/brandinfo' || (this.checkNeedLogin() && url !== '/brand/edit')) {
         wx.redirectTo({
           url: '/pages/wxLogin/index'
         }) 

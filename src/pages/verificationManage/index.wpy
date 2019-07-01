@@ -3,7 +3,7 @@
   <view class="page-contain page-verification">
     <view class="verification-search proxy-flex is-align-middle">
       <view class="control-search">
-        <input type="number" class="font-size--28 input" confirm-type="search" bindconfirm="handleToSearch" placeholder-class="placeholder" placeholder="请输入订单号">
+        <input type="text" class="font-size--28 input" confirm-type="search" bindconfirm="handleToSearch" placeholder-class="placeholder" placeholder="请输入订单号">
       </view>
       <view class="control-code proxy-flex is-align-middle is-justify-center" @tap.stop="handleToScan">
         <image mode="aspectFill" class="icon-code" src="../../images/icon-code.png"></image>
@@ -37,6 +37,7 @@
       navigationBarTitleText: '核销管理'
     }
     data = {
+      isFirst: false,
       page: 1,
       limit: 20,
       tableData: [],
@@ -61,6 +62,7 @@
           tableData = []
         }
         this.tableData = tableData.concat(data.items)
+        this.isFirst = true
         if (data.items.length < limit) {
           this.hasMoreData = false
         } else {
@@ -116,6 +118,9 @@
     onHide () {
     }
     onShow () {
+      if (this.isFirst) {
+        this.verifList()
+      }
     }
   }
 </script>

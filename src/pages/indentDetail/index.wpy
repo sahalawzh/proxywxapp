@@ -24,7 +24,7 @@
             <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
             <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
             <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
-              <view>{{ item.specifications }}/桶</view>
+              <view>{{ item.specifications }}</view>
               <view>x{{ item.number }}</view>
               <!-- <proxy-stepper width="48rpx" height="46rpx" max="{{storeList[item.index].number}}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper> -->
             </view>
@@ -52,12 +52,12 @@
         <view class="value font-size--28">{{ order.addTime }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">制单人</view>
+        <view class="label font-size--32">收货人</view>
         <view class="value font-size--28">{{ order.consignee }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">审核日期</view>
-        <view class="value font-size--28">{{ order.updateTime }}</view>
+        <view class="value font-size--28">{{ order.applyTime }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">订单状态</view>

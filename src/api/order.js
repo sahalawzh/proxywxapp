@@ -33,4 +33,10 @@ export default class order extends base {
   static verifList (opts) {
     return this.get(`order/verifList`, opts)
   }
+  /**
+   * 发货
+   */
+  static ship (opts) {
+    return this.post(`order/ship`, opts)
+  }
 }

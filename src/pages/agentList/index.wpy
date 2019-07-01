@@ -3,10 +3,16 @@
   <view class="page-contain page-visit">
     <view class="visit-list" wx:if="{{list.length}}">
       <navigator url="/pages/agentVisit/index?id={{item.id}}&agentName={{item.agentName}}&mobile={{item.mobile}}" hover-class="none" wx:for="{{list}}" wx:key="index" class="visit-list__item proxy-flex">
-        <image mode="aspectFill" class="visit-icon" src="{{ item.picUrl }}"></image>
+        <image mode="aspectFill" class="visit-icon" src="{{ item.picUrl || '../../images/test.png' }}"></image>
         <view class="content font-size--32">
-          <view class="content-title">{{ item.agentName }}</view>
-          <view class="content-desc">{{ item.address }}</view>
+          <view class="content-box">
+            <view class="content-title">
+              <proxy-elip line="1">{{ item.agentName }}</proxy-elip>
+            </view>
+            <view class="content-desc">
+              <proxy-elip line="2">{{ item.address }}</proxy-elip>
+            </view>
+          </view>
           <view class="arrow-box proxy-flex is-align-middle">
             <view class="font-size--28">拜访</view>
             <image class="arrow-icon" src="../../images/icon-arrow.png" mode="aspectFill"></image>
@@ -23,7 +29,10 @@
   import visitApis from '../../api/visit'
   export default class AgentList extends wepy.page {
     config = {
-      navigationBarTitleText: '代理商列表'
+      navigationBarTitleText: '代理商列表',
+      usingComponents: {
+        'proxy-elip': '../../packages/elip/index'
+      }
     }
     data = {
       page: 1,
