@@ -2,9 +2,9 @@
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-sellOrder">
     <view class="sellOrder-products">
-      <view class="proxy-flex store-item is-align-middle is-justify-space-between">
+      <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{ order.orderStatus !== 101 }}">
         <view class="font-size--32 label">入库仓库</view>
-        <block wx:if="{{order.orderStatus === 301}}">
+        <block wx:if="{{order.orderStatus === 301 || order.orderStatus === 401}}">
           <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
             <view class="font-size--30 item-select proxy-flex is-align-middle">
               <text class="tab-plane__label">{{ storeList[storeIndex].name }}</text>
@@ -176,6 +176,9 @@
         data.orderGoods.forEach(item => {
           item.sum = accMul(item.price, item.number)
           item.index = 0
+          if (this.order.orderStatus === 301 || this.order.orderStatus === 401) { // 待收货
+            this.storeIndex = data.orderGoods[0].storehouseList.findIndex(_item => _item.id === item.outStockhouseId)
+          }
         })
         this.order = data.order
         if (this.order.orderStatus === 301) { // 待收货

@@ -159,10 +159,13 @@ export default class extends wepy.app {
   }
 
   createAuthHeader () {
+    let route = getCurrentPages()[getCurrentPages().length - 1].__route__
     const token = wepy.$instance.globalData.Token
     let header = {
-      'X-Litemall-Admin-Token': token,
       'X-Requested-With': 'XMLHttpRequest'
+    }
+    if (route !== 'pages/register/index') {
+      header['X-Litemall-Admin-Token'] = token
     }
     return header
   }

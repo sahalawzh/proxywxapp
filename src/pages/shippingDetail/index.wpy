@@ -21,9 +21,13 @@
             <view class="product-content">
               <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
               <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+              <view class="font-size--24" wx:if="{{ order.orderStatus === 101 }}">库存：{{ item.stock }}</view>
               <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
                 <view>{{ item.specifications }}</view>
-                <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabled}}" max="{{ maxStock }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+                <block wx:if="{{ order.orderStatus == 101 }}">
+                  <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabled}}" max="{{ item.stock }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+                </block>
+                <view wx:else>×{{item.number}}</view>
               </view>
               <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
             </view>
@@ -83,7 +87,7 @@
         </block>
         <view class="sellOrder-info__item proxy-flex is-align-middle">
           <view>应付金额:</view>
-          <input class="font-size--28 value" disabled="{{disabled}}" name="actualPrice" value="{{ order.actualPrice }}" type="text" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入付款金额'}}">
+          <input class="font-size--28 value" disabled="{{disabled}}" name="actualPrice" value="{{ payableAmount }}" type="text" placeholder-class="placeholder" placeholder="{{disabled ? '' : '请输入付款金额'}}">
         </view>
       </view>
       
@@ -100,6 +104,7 @@
   import brandOrderApis from '../../api/brandOrder'
   import { accMul, accAdd } from '../../utils/arithmetic'
   import wxutils from '../../utils/wxutils'
+  import deepCopy from '../../utils/deepCopy'
   export default class shippingDetail extends wepy.page {
     config = {
       navigationBarTitleText: '出货详情',
@@ -122,15 +127,18 @@
       storeIndex: 0
     }
     computed = {
-      maxStock () {
-        let result = 0
-        if (this.goods.length) {
-          this.goods[0].storehouseList.forEach(item => {
-            result += item.number
-          })
-        }
-        return result
+      payableAmount () {
+        return deepCopy(this.order.actualPrice)
       },
+      // maxStock () {
+      //   let result = 0
+      //   if (this.goods.length) {
+      //     this.goods[0].storehouseList.forEach(item => {
+      //       result += item.number
+      //     })
+      //   }
+      //   return result
+      // },
       totalPrice () {
         if (this.goods.length) {
           let result = 0
@@ -168,6 +176,14 @@
         const { data } = await brandOrderApis.detail(opts)
         data.orderGoods.forEach(item => {
           item.sum = accMul(item.price, item.number)
+          if (data.order.orderStatus === 101) {
+            let sum = 0
+            item.storehouseList.forEach(_item => {
+              sum += _item.number
+            })
+            item.stock = sum
+          }
+          item.outStockhouseId = data.orderGoods[0].storehouseList[this.storeIndex].id
         })
         let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
           return store.id === data.orderGoods[0].outStockhouseId
@@ -257,7 +273,7 @@
       handleDisableQty (e) {
         if (e.detail.trigger === 2) {
           wx.showToast({
-            title: '库存不足',
+            title: '已超过最大库存',
             icon: 'none',
             duration: 2000
           })
@@ -304,7 +320,7 @@
           }
           const { order, goods } = this
           const opts = {
-            brandOrder: {...params, ...order},
+            brandOrder: { ...order, ...params, ...{goodsPrice: this.totalPrice} },
             goodsList: goods
           }
           const { data } = await brandOrderApis.update(opts)

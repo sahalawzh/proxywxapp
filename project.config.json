@@ -6,6 +6,7 @@
 	"setting": {
 		"urlCheck": false,
 		"es6": false,
+		"enhance": false,
 		"postcss": false,
 		"minified": false,
 		"newFeature": true,
@@ -20,7 +21,7 @@
 		}
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.7.1",
+	"libVersion": "2.7.3",
 	"appid": "wx682346fa5b40baf8",
 	"projectname": "proxywxapp",
 	"miniprogramRoot": "dist/",
@@ -58,7 +59,7 @@
 					"id": 1,
 					"name": "注册",
 					"pathName": "pages/register/index",
-					"query": "code=3HiS1J",
+					"query": "code=0rUgkN",
 					"scene": null
 				},
 				{
@@ -121,7 +122,7 @@
 					"id": 10,
 					"name": "确认订单",
 					"pathName": "pages/indentPay/index",
-					"query": "orderId=74",
+					"query": "orderId=42",
 					"scene": null
 				},
 				{
@@ -170,7 +171,7 @@
 					"id": 17,
 					"name": "出货详情",
 					"pathName": "pages/shippingDetail/index",
-					"query": "id=1",
+					"query": "id=49",
 					"scene": null
 				},
 				{

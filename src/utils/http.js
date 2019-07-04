@@ -125,10 +125,11 @@ export default class http {
         throw error
       }
     } else {
-      if (this.checkNeedLogin() && url !== '/admin/brandinfo' || (this.checkNeedLogin() && url !== '/brand/edit')) {
+      let route = getCurrentPages()[getCurrentPages().length-1].__route__
+      if (this.checkNeedLogin() && route !== 'pages/register/index') {
         wx.redirectTo({
           url: '/pages/wxLogin/index'
-        }) 
+        })
       } else { // 正常发送
         let res
         try {
@@ -185,7 +186,7 @@ export default class http {
         }
       })
     }
-    if (res.data.errno !== 0) { // 处理token失效
+    if (res.data.errno !== 0) { // 处理非token失效
       throw wx.showModal({
         title: '提示',
         showCancel: false,

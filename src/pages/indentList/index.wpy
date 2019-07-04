@@ -32,7 +32,7 @@
         </view>
       </view>
 
-      <view class="font-size--30 indentList-tel">联系电话：{{ mobile }}</view>
+      <view class="font-size--30 indentList-tel" @tap.stop="handleToCall">联系电话：{{ mobile }}</view>
 
       <view class="table">
         <view class="table-tr table-thead proxy-flex is-align-middle">
@@ -157,17 +157,16 @@
     onLoad () {
       this.mobile = wepy.$instance.globalData.brandInfo.parentMobile
       this.getIndentList()
-      let pages = getCurrentPages() // 获取页面栈
-      var prevPage = pages[pages.length - 2] // 上一个页面
-      prevPage.setData({
-        isNewAdd: true
-      })
-      console.log(prevPage)
     }
     handleAddIndent () {
       this.getIndentList()
     }
     methods = {
+      handleToCall () {
+        wx.makePhoneCall({
+          phoneNumber: this.mobile
+        })
+      },
       hanldeToTab (type) {
         this.order = this.order === 'desc' ? 'asc' : 'desc'
         this.page = 1

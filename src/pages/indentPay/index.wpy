@@ -8,9 +8,10 @@
           <view class="product-content">
             <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
             <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+            <view class="font-size--24">库存: {{ item.stock }}</view>
             <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
               <view>{{ item.specifications }}</view>
-              <proxy-stepper width="48rpx" height="46rpx" max="{{ maxStock }}" @stepperDisableTap.stop="handleDisableQty" data-index="{{ index }}" value="{{ item.qty }}" @changenumber.stop="changeQty"></proxy-stepper>
+              <proxy-stepper width="48rpx" height="46rpx" max="{{ item.stock }}" @stepperDisableTap.stop="handleDisableQty" data-index="{{ index }}" value="{{ item.qty }}" @changenumber.stop="changeQty"></proxy-stepper>
             </view>
             <view class="font-size--46 item-total"><text class="font-size--32 item-total__label">总计：</text><text class="font-size--32 unit">¥</text>{{ item.sum }}</view>
           </view>
@@ -95,15 +96,15 @@
       this.getOrderDetail()
     }
     computed = {
-      maxStock () {
-        let result = 0
-        if (this.goodsList.length) {
-          this.goodsList[0].storehouseList.forEach(item => {
-            result += item.number
-          })
-        }
-        return result
-      },
+      // maxStock () {
+      //   let result = 0
+      //   if (this.goodsList.length) {
+      //     this.goodsList[0].storehouseList.forEach(item => {
+      //       result += item.number
+      //     })
+      //   }
+      //   return result
+      // },
       total () {
         let sum = 0
         this.goodsList.forEach(item => {
@@ -127,13 +128,15 @@
         orderGoods.forEach(item => {
           item.qty = 1
           item.sum = accMul(item.price, item.qty)
-          item.stock = item.number
+          // item.stock = item.number
+          let sum = 0
           item.storehouseList.forEach(_item => {
-            item.stock = Math.max(_item.number, item.stock)
+            // item.stock = Math.max(_item.number, item.stock)
+            sum += _item.number
           })
+          item.stock = sum
         })
         this.goodsList = orderGoods
-        console.log(this.goodsList)
         this.orderInfo = order
         this.$apply()
         wx.hideLoading()
@@ -178,7 +181,7 @@
       handleDisableQty (e) {
         if (e.detail.trigger === 2) {
           wx.showToast({
-            title: '库存不足',
+            title: '已超过最大库存',
             icon: 'none',
             duration: 2000
           })
@@ -199,12 +202,21 @@
           })
           return
         }
+        const MAXTOTAL = 9999999
+        if ( this.total >= MAXTOTAL ) {
+          wx.showToast({
+            title: '已超过最大交易金额',
+            icon: 'none'
+          })
+          return
+        }
         try {
           wx.showLoading({
             title: '提交中',
             mask: true
           })
-          let { goodsList, orderInfo } = this
+          let { goodsList, orderInfo, total } = this
+          orderInfo.actualPrice = total
           goodsList.forEach(element => {
             element.number = element.qty
           })

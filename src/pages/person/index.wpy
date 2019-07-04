@@ -8,14 +8,18 @@
     </view> -->
 
     <view class="withdraw-content">
-      <view @tap.stop="handleProxyDetail({{item}})" wx:for="{{list}}" wx:key="index" hover-class="none" class="item proxy-flex">
-        <image mode="aspectFill" class="item-img" src="../../images/test.png"></image>
-        <view class="item-info font-size--32">
-          <proxy-elip line="1" class="title">{{ item.name }}</proxy-elip>
-          <view class="name">{{ item.contacts }}<text>{{ item.mobile }}</text></view>
-          <proxy-elip line="1" class="address">{{ item.address }}</proxy-elip>
+      <block wx:if="{{list.length}}">
+        <view @tap.stop="handleProxyDetail({{item}})" wx:for="{{list}}" wx:key="index" hover-class="none" class="item proxy-flex">
+          <image mode="aspectFill" class="item-img" src="../../images/test.png"></image>
+          <view class="item-info font-size--32">
+            <proxy-elip line="1" class="title">{{ item.name }}</proxy-elip>
+            <view class="name">{{ item.contacts }}<text>{{ item.mobile }}</text></view>
+            <proxy-elip line="1" class="address">{{ item.address }}</proxy-elip>
+          </view>
         </view>
-      </view>
+      </block>
+
+      <view class="font-size--26 empty-box" wx:else>暂无相关数据~</view>
     </view>
   </view>
 </template>
