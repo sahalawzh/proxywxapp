@@ -1,31 +1,146 @@
 
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-walletUse">
-    <view class="walletUse-wrap proxy-ml-30 proxy-mr-30">
-      <view class="font-size--30 title">提现金额</view>
-      <view class="amount proxy-flex is-align-middle">
-        <view class="amount-unit">￥</view>
-        <view>
-          <input type="number" class="amount-price" value="{{9999}}"/>
+    <form bindsubmit="handleWalletUse">
+      <view class="walletUse-wrap proxy-ml-30 proxy-mr-30">
+        <view class="font-size--30 title">提现金额</view>
+        <view class="amount proxy-flex is-align-middle">
+          <view class="amount-unit">￥</view>
+          <view>
+            <input type="number" bindinput="bindKeyInput" name="money" class="amount-price"/>
+          </view>
+        </view>
+        <view class="font-size--24 tip" wx:if="{{!error}}">当前可提现余额{{ amount }}元</view>
+        <view class="font-size--24 tip" style="color: red" wx:else>输入金额超过零钱余额</view>
+        <view class="form-items font-size--26">
+          <view class="proxy-flex form-item is-align-middle">
+            <view>银行账号 ：</view>
+            <input type="text" name="bankAccount" placeholder-class="placeholder" placeholder="请输入银行卡号">
+          </view>
+          <view class="proxy-flex form-item is-align-middle">
+            <view>开户支行 ：</view>
+            <input type="text" name="accountOpeningBranch" placeholder-class="placeholder" placeholder="请输入开户支行">
+          </view>
+          <view class="proxy-flex form-item is-align-middle">
+            <view>收款人姓名 ：</view>
+            <input type="text" name="payeeName" placeholder-class="placeholder" placeholder="请输入收款人姓名">
+          </view>
+        </view>
+        <button class="font-size--32 wallet-btn" type="primary" form-type="submit">提现</button>
+        <view class="wallet-tip font-size--26">
+          <view class="wallet-tip__item">i.说明：由于新开通在线服务，商户需要30天流水后才可提现，尽请理解！</view>
+          <view class="wallet-tip__item">ii.提交表单，填写收款信息：银行账号，开户支行，收款人姓名  人工客服将线下转账</view>
         </view>
       </view>
-      <view class="font-size--24 tip">当前可提现余额100元，<text class="tip-tag">全部提现</text></view>
-      <button class="font-size--32 wallet-btn" type="primary">提现</button>
-    </view>
+    </form>
+
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import walletApis from '../../api/wallet'
   export default class WalletUse extends wepy.page {
     config = {
       navigationBarTitleText: ''
     }
     data = {
+      amount: '',
+      error: false
     }
     onLoad () {
+      this.walletBalance()
+    }
+    async walletBalance () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await walletApis.walletBalance()
+        this.amount = data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    verification (verifyData) {
+      let { money, bankAccount, accountOpeningBranch, payeeName } = verifyData
+      const { error } = this
+      const errVaild = {
+        vaild: true,
+        msg: ''
+      }
+      if (!money) {
+        errVaild.vaild = false
+        errVaild.msg = '提现金额不能为空'
+        return errVaild
+      }
+      if (!bankAccount) {
+        errVaild.vaild = false
+        errVaild.msg = '银行账号不能为空'
+        return errVaild
+      }
+      if (!accountOpeningBranch) {
+        errVaild.vaild = false
+        errVaild.msg = '开户支行不能为空'
+        return errVaild
+      }
+      if (!payeeName) {
+        errVaild.vaild = false
+        errVaild.msg = '收款人姓名不能为空'
+        return errVaild
+      }
+      if (error) {
+        errVaild.vaild = false
+        errVaild.msg = '输入金额超过零钱余额'
+        return errVaild
+      }
+      return errVaild
     }
     methods = {
+      bindKeyInput(e) {
+        this.error = e.detail.value > Number(this.amount)
+        this.$apply()
+      },
+      async handleWalletUse (e) {
+        let verifyData = e.detail.value
+        const errVaild = this.verification(verifyData)
+        if (!errVaild.vaild) {
+          wx.showToast({
+            title: errVaild.msg,
+            icon: 'none'
+          })
+          return
+        }
+        try {
+          let {money = '', bankAccount = '', accountOpeningBranch = '', payeeName = ''} = verifyData
+          money = money.trim()
+          bankAccount = bankAccount.trim()
+          accountOpeningBranch = accountOpeningBranch.trim()
+          payeeName = payeeName.trim()
+          wx.showLoading({
+            title: '提现中',
+            mask: true
+          })
+          const opts = {
+            money,
+            bankAccount,
+            accountOpeningBranch,
+            payeeName
+          }
+          await walletApis.withdraw(opts)
+          wepy.navigateBack({
+            delta: 1
+          })
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      }
     }
     onUnload () {
     }

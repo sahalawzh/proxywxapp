@@ -53,7 +53,11 @@ export default class extends wepy.app {
       'pages/agentVisit/index',
       'pages/performanceList/index',
       'pages/performanceDetail/index',
-      'pages/repairFactoryDetail/index'
+      'pages/repairFactoryDetail/index',
+      'pages/messageCenter/index',
+      'pages/purchaseList/index', // 进销列表
+      'pages/purchaseDetail/index', // 进销详情
+      'pages/agentDetail/index' // 代理商详情
     ],
     window: {
       backgroundTextStyle: 'light',

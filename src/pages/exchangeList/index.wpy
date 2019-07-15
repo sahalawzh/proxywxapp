@@ -1,28 +1,56 @@
 
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-exchangeList">
-    <view class="exchange-item">
-      <view class="title font-size--32">充值</view>
-      <view class="time font-size--28">2019-10-10 19:00</view>
-      <view class="value font-size--48">+200</view>
-    </view>
-    <view class="exchange-item">
-      <view class="title font-size--32">充值</view>
-      <view class="time font-size--28">2019-10-10 19:00</view>
-      <view class="value font-size--48">+200</view>
-    </view>
+    <block wx:if="{{ list.length }}">
+      <view class="exchange-item" wx:for="{{ list }}" wx:key="index">
+        <view class="title font-size--32">{{ type[item.reason] }}</view>
+        <view class="time font-size--28">{{ item.addTime }}</view>
+        <view class="value font-size--48">{{ item.isGrow ? '+' : '-' }} {{ item.amount }}</view>
+      </view>
+    </block>
+
+    <view class="font-size--28 exchange-empty" wx:else>暂无相关明细数据~</view>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
+  import walletApis from '../../api/wallet'
   export default class ExchangeList extends wepy.page {
     config = {
       navigationBarTitleText: '交易明细'
     }
     data = {
+      list: [],
+      type: {
+        'recharge': '充值',
+        'refund': '退款',
+        'consume': '消费',
+        'withdraw': '提现',
+        'verif': '核销'
+      }
     }
     onLoad () {
+      this.walletList()
+    }
+    async walletList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          page: 1,
+          size: 9999
+        }
+        const { data } = await walletApis.walletList(opts)
+        this.list = data.data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
     }
     methods = {
     }

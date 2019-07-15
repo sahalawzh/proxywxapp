@@ -23,9 +23,12 @@
         <view class="font-size--32 upload-label">上传照片</view>
         <view>
           <block wx:if="{{uploadImgs.length}}">
-            <image mode="aspectFill" @tap.stop="handleImagePreview({{index}})" wx:for="{{uploadImgs}}" wx:key="index" class="icon-upload" src="{{ item }}"></image>
+          <view class="proxy-pos-r upload-box" wx:for="{{uploadImgs}}" wx:key="index">
+            <image mode="aspectFill" @tap.stop="handleImagePreview({{index}})" class="icon-upload" src="{{ item }}"></image>
+            <icon type="cancel" size="20" color="red" class="icon-cancel" @tap.stop="handleToDelImg({{index}})"/>
+          </view>
           </block>
-          <image @tap.stop="handleAddImage" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
+          <image @tap.stop="handleAddImage" wx:if="{{ uploadImgs.length < 3 }}" mode="aspectFill" class="icon-upload" src="../../images/icon-upload.png"></image>
         </view>
       </view>
 
@@ -61,6 +64,9 @@
       this.id = id
     }
     methods = {
+      handleToDelImg (index) {
+        this.uploadImgs.splice(index, 1)
+      },
       handleImagePreview (idx) {
         wx.previewImage({
           current: this.uploadImgs[idx], // 当前预览的图片

@@ -27,4 +27,16 @@ export default class stock extends base {
   static storehouseList (opts) {
     return this.get(`stock/storehouseList`, opts)
   }
+  /**
+   * 入库单
+   */
+  static inList (opts) {
+    return this.get(`/stock/in-list`, opts)
+  }
+  /**
+   * 出库单
+   */
+  static outList (opts) {
+    return this.get(`/stock/out-list`, opts)
+  }
 }

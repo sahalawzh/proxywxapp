@@ -1,0 +1,119 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-message">
+    <view class="message-list proxy-mb-30" wx:if="{{ list.length }}">
+      <view class="message-list__item proxy-pl-30 proxy-pr-30" wx:for="{{list}}" wx:key="{{index}}">
+        <view class="time font-size--24">
+          <text class="time-box">{{ item.addTime }}</text>
+        </view>
+        <view class="item-box">
+          <view class="content font-size--26">{{ item.content }}</view>
+          <view class="look font-size--24 proxy-flex is-align-middle" @tap.stop="handleToCheck({{ item }}, {{ index }})">
+            <view>查看</view>
+            <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+          </view>
+          <view class="badge" wx:if="{{ !item.isRead }}"></view>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="font-size--26 message-empty">暂无相关数据~</view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import messageApis from '../../api/message'
+  import wxutils from '../../utils/wxutils'
+  const messageType = {
+    1: '/pages/shippingList/index',
+    2: '/pages/indentList/index',
+    3: '/pages/indentList/index'
+  }
+  export default class messageCenter extends wepy.page {
+    config = {
+      navigationBarTitleText: '消息中心'
+    }
+    data = {
+      isFirst: false,
+      list: [],
+      page: 1,
+      limit: 10,
+      hasMoreData: false
+    }
+    async messageList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, list } = this
+        const opts = {
+          page,
+          limit
+        }
+        const { data } = await messageApis.list(opts)
+        this.isFirst = true
+        if (page === 1) {
+          list = []
+        }
+        this.list = list.concat(data.data)
+        if (data.data.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        wx.hideLoading()
+        console.log(error)
+      }
+    }
+    onReachBottom () {
+      if (this.hasMoreData) {
+        this.messageList()
+      }
+    }
+    onLoad () {
+      this.messageList()
+    }
+    methods = {
+      async handleToCheck (item, index) {
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          if (!item.isRead) {
+            item.isRead = true
+          }
+          await messageApis.readMessage(item)
+          if (messageType[item.messageTypeId]) {
+            wxutils.backOrNavigate(messageType[item.messageTypeId])
+          } else {
+            this.list[index].isRead = true
+          }
+          this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          wx.hideLoading()
+          console.log(error)
+        }
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+      if (this.isFirst) {
+        this.messageList()
+      }
+    }
+  }
+</script>
+<style lang='postcss'>
+   @import 'src/styles/pages/messageCenter/index.postcss';
+</style>

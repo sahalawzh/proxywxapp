@@ -2,38 +2,39 @@
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-visit">
     <view class="visit-detail">
-      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+      <!-- <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">本月业绩任务</view>
         <view class="font-size--28">测试</view>
-      </view>
+      </view> -->
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">业务员</view>
-        <view class="font-size--28">15521054017</view>
+        <view class="font-size--28">{{ detail.userName }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">联系电话</view>
-        <view class="font-size--28">北京市回龙观</view>
+        <view class="font-size--28">{{ detail.mobile }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">本月业绩</view>
-        <view class="font-size--28">北京市回龙观</view>
+        <view class="font-size--28">{{ detail.monthAmount || 0 }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">全部业绩</view>
-        <view class="font-size--28">北京市回龙观</view>
+        <view class="font-size--28">{{ detail.totalAmount || 0 }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">本月提成</view>
-        <view class="font-size--28">北京市回龙观</view>
+        <view class="font-size--28">{{ detail.monthCommission || 0 }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">最后进货时间</view>
-        <view class="font-size--28">北京市回龙观</view>
+        <view class="font-size--28">{{ detail.lastTime }}</view>
       </view>
-      <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
+      <navigator url="/pages/agentDetail/index?adminId={{detail.adminId}}" class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">代理商数量</view>
-        <view class="font-size--28">北京市回龙观</view>
-      </view>
+        <view class="font-size--28 number-value">{{ detail.number || 0 }}</view>
+        <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
+      </navigator>
     </view>
   </view>
 </template>
@@ -45,13 +46,22 @@
       navigationBarTitleText: '业绩报表详情'
     }
     data = {
-      uploadImgs: []
+      detail: ''
     }
     onLoad () {
+      wx.getStorage({
+        key: 'performanceDetail',
+        success: (res) => {
+          this.detail = res.data
+        }
+      })
     }
     methods = {
     }
     onUnload () {
+      wx.removeStorage({
+        key: 'performanceDetail'
+      })
     }
     onHide () {
     }

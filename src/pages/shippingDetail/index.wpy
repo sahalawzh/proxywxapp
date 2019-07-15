@@ -3,17 +3,20 @@
   <view class="page-contain page-sellOrder">
     <form bindsubmit="handleSubmitForm">
       <view class="sellOrder-products">
-        <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{order.orderStatus === 111}}">
+        <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{isShowStore}}">
           <view class="font-size--32 label">出货仓库</view>
-          <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
-            <view class="font-size--30 item-select proxy-flex is-align-middle">
-              <text class="tab-plane__label">{{ goods[0].storehouseList[storeIndex].name }}</text>
-              <text class="arrow-box">
-                <text class="arrow-box__up arrow"></text>
-                <text class="arrow-box__down arrow"></text>
-              </text>
-            </view>
-          </picker>
+          <block wx:if="{{order.orderStatus === 111}}">
+            <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
+              <view class="font-size--30 item-select proxy-flex is-align-middle">
+                <text class="tab-plane__label">{{ goods[0].storehouseList[storeIndex].name }}</text>
+                <text class="arrow-box">
+                  <text class="arrow-box__up arrow"></text>
+                  <text class="arrow-box__down arrow"></text>
+                </text>
+              </view>
+            </picker>
+          </block>
+          <view wx:else class="font-size--30">{{ goods[0].storehouseList[storeIndex].name }}</view>
         </view>
         <view class="sellOrder-products__item" wx:for="{{goods}}" wx:key="index">
           <view class="proxy-flex product-item" :class="{'no-store': order.orderStatus !== 111}">
@@ -70,7 +73,12 @@
         </view>
         <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
           <view class="label font-size--32">备注</view>
-          <view class="value font-size--28">{{ order.message }}</view>
+          <input wx:if="{{btnText}}" bindblur="hanldeBlurMessage" class="font-size--28 value proxy-ta-r" name="message" value="{{ order.message }}" placeholder-class="placeholder" placeholder="请输入备注">
+          <view wx:else class="value font-size--28">{{ order.message }}</view>
+        </view>
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+          <view class="label font-size--32">是否结清</view>
+          <switch checked="{{order.isSettle}}" bindchange="switchChange"/>
         </view>
       </view>
 
@@ -127,6 +135,9 @@
       storeIndex: 0
     }
     computed = {
+      isShowStore () {
+        return this.order && (this.order.orderStatus === 111 || this.order.orderStatus === 301 || this.order.orderStatus === 401)
+      },
       payableAmount () {
         return deepCopy(this.order.actualPrice)
       },
@@ -183,7 +194,7 @@
             })
             item.stock = sum
           }
-          item.outStockhouseId = data.orderGoods[0].storehouseList[this.storeIndex].id
+          // item.outStockhouseId = data.orderGoods[0].storehouseList[this.storeIndex].id
         })
         let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
           return store.id === data.orderGoods[0].outStockhouseId
@@ -269,7 +280,46 @@
         wx.hideLoading()
       }
     }
+    async updateOrder (params) {
+      try {
+        const { order, goods } = this
+        let brandOrder = {
+          ...order,
+          ...{goodsPrice: this.totalPrice}
+        }
+        if (params) {
+          brandOrder = {...brandOrder, ...params}
+        }
+        const opts = {
+          brandOrder,
+          goodsList: goods
+        }
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await brandOrderApis.update(opts)
+        if (params) {
+          params.orderId = data.orderId
+          this.handleCreat(params)
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
     methods = {
+      hanldeBlurMessage (e) {
+        const { value } = e.detail
+        this.order.message = value
+      },
+      switchChange (e) {
+        const { value } = e.detail
+        this.order.isSettle = value
+        this.updateOrder()
+      },
       handleDisableQty (e) {
         if (e.detail.trigger === 2) {
           wx.showToast({
@@ -294,10 +344,10 @@
           wx.hideLoading()
         }
       },
-      async handleSubmitForm (e) {
+      handleSubmitForm (e) {
         const formData = e.detail.value
         const errVaild = this.verification(formData, this.order.orderStatus)
-        let { shipSn = '', shipChannel = '', actualPrice = '' } = formData
+        let { shipSn = '', shipChannel = '', actualPrice = '', message } = formData
         shipSn = shipSn.trim()
         shipChannel = shipChannel.trim()
         actualPrice = actualPrice.trim()
@@ -308,30 +358,13 @@
           })
           return
         }
-        try {
-          wx.showLoading({
-            title: '加载中',
-            mask: true
-          })
-          let params = {
-            shipSn,
-            shipChannel,
-            actualPrice
-          }
-          const { order, goods } = this
-          const opts = {
-            brandOrder: { ...order, ...params, ...{goodsPrice: this.totalPrice} },
-            goodsList: goods
-          }
-          const { data } = await brandOrderApis.update(opts)
-          params.orderId = data.orderId
-          this.handleCreat(params)
-          this.$apply()
-          wx.hideLoading()
-        } catch (error) {
-          console.log(error)
-          wx.hideLoading()
+        let params = {
+          shipSn,
+          shipChannel,
+          actualPrice,
+          message
         }
+        this.updateOrder(params)
       },
       async changeQty (e) {
         const { index } = e.target.dataset

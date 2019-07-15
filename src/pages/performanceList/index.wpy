@@ -9,16 +9,19 @@
       <view class="table">
         <view class="table-tr table-thead proxy-flex is-align-middle">
           <view class="table-tr__col table-thead__th">业务员</view>
-          <view class="table-tr__col table-thead__th">扩展代理商数量</view>
+          <view class="table-tr__col table-thead__th" style="width: 222rpx">扩展代理商数量</view>
           <view class="table-tr__col table-thead__th">本月业绩</view>
           <view class="table-tr__col table-thead__th">总业绩</view>
         </view>
-        <navigator url="/pages/performanceDetail/index" class="table-tr proxy-flex is-align-middle font-size--24">
-          <view class="table-tr__col table-thead__td">2456</view>
-          <view class="table-tr__col table-thead__td">A润滑油,B润滑油B润滑油</view>
-          <view class="table-tr__col table-thead__td">2019-01-01 12:00</view>
-          <view class="table-tr__col table-thead__td">待审核</view>
-        </navigator>
+        <block wx:if="{{tableData.length}}">
+          <view class="table-tr proxy-flex is-align-middle font-size--24" wx:for="{{tableData}}" wx:key="index" @tap.stop="handleDetail({{item}})">
+            <view class="table-tr__col table-thead__td">{{ item.userName }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.number || 0 }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.monthAmount || 0 }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.totalAmount || 0 }}</view>
+          </view>
+        </block>
+        <view class="font-size--26 table-empty" wx:else>暂无相关数据</view>
       </view>
 
     </view>
@@ -28,6 +31,8 @@
 <script>
   import wepy from 'wepy'
   import Search from '../../components/search'
+  import reportApis from '../../api/report'
+  import wxutils from '../../utils/wxutils'
   export default class PerformanceList extends wepy.page {
     config = {
       navigationBarTitleText: '业绩报表'
@@ -36,10 +41,67 @@
       search: Search
     }
     data = {
+      page: 1,
+      limit: 20,
+      tableData: [],
+      hasMoreData: false,
+      username: ''
+    }
+    events = {
+      handleToSearch (val) {
+        this.username = val
+        this.page = 1
+        this.performanceList()
+      },
+      handleEmptySearch () {
+        this.username = ''
+      }
+    }
+    async performanceList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, tableData, username } = this
+        const opts = {
+          page,
+          limit
+        }
+        if (username) {
+          opts.username = username
+        }
+        const { data } = await reportApis.results(opts)
+        if (page === 1) {
+          tableData = []
+        }
+        this.tableData = tableData.concat(data.items)
+        if (data.items.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page ++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
     }
     onLoad () {
+      this.performanceList()
     }
     methods = {
+      handleDetail (item) {
+        wx.setStorage({
+          key: 'performanceDetail',
+          data: item,
+          success: () => {
+            wxutils.backOrNavigate('/pages/performanceDetail/index')
+          }
+        })
+      }
     }
     onUnload () {
     }

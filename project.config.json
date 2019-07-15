@@ -46,7 +46,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 1,
+			"current": 7,
 			"list": [
 				{
 					"id": 0,
@@ -63,6 +63,34 @@
 					"scene": null
 				},
 				{
+					"id": 1,
+					"name": "进销列表",
+					"pathName": "pages/purchaseList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 1,
+					"name": "业务员报表",
+					"pathName": "pages/performanceList/index",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 1,
+					"name": "业务报表详情",
+					"pathName": "pages/performanceList/detail",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": 2,
+					"name": "消息中心",
+					"pathName": "pages/messageCenter/index",
+					"query": "",
+					"scene": null
+				},
+				{
 					"id": 2,
 					"name": "核销管理",
 					"pathName": "pages/verificationManage/index",
@@ -70,10 +98,10 @@
 					"scene": null
 				},
 				{
-					"id": 3,
+					"id": 7,
 					"name": "核销详情",
 					"pathName": "pages/verificationDeatil/index",
-					"query": "orderSn=20190625441643",
+					"query": "orderSn=20190715118690",
 					"scene": null
 				},
 				{
@@ -147,10 +175,10 @@
 					"scene": null
 				},
 				{
-					"id": 14,
+					"id": 18,
 					"name": "订货详情",
 					"pathName": "pages/indentDetail/index",
-					"query": "id=6",
+					"query": "id=59",
 					"scene": null
 				},
 				{
@@ -168,10 +196,10 @@
 					"scene": null
 				},
 				{
-					"id": 17,
+					"id": 18,
 					"name": "出货详情",
 					"pathName": "pages/shippingDetail/index",
-					"query": "id=49",
+					"query": "id=19",
 					"scene": null
 				},
 				{

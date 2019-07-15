@@ -116,7 +116,8 @@
         const opts = {
           page,
           limit,
-          order
+          order,
+          sort: 'add_time'
         }
         if (+orderStatusArray) {
           opts.orderStatusArray = orderStatusArray

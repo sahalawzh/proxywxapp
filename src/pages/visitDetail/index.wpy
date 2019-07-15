@@ -16,7 +16,7 @@
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">业务员</view>
-        <view class="font-size--28">{{ detail.intervieweeName }}</view>
+        <view class="font-size--28">{{ detail.visitorName }}</view>
       </view>
       <view class="visit-form__item proxy-flex is-align-middle is-justify-space-between">
         <view class="font-size--32 label">拜访时间</view>
@@ -25,8 +25,8 @@
     </view>
     <view class="visit-upload proxy-flex">
       <view class="font-size--32 upload-label">拜访照片</view>
-      <view>
-        <image mode="aspectFill" class="icon-upload" @tap.stop="handleImagePreview({{detail.imgs}})" src="{{ detail.imgs }}"></image>
+      <view wx:if="{{detail.imgs}}">
+        <image mode="aspectFill" class="icon-upload" wx:for="{{detail.imgs}}" wx:key="index" @tap.stop="handleImagePreview({{item}})" src="{{ item }}"></image>
       </view>
     </view>
   </view>
@@ -45,15 +45,16 @@
       wx.getStorage({
         key: 'visitDetail',
         success: (res) => {
+          res.data.imgs = res.data.imgs.split(',')
           this.detail = res.data
         }
       })
     }
     methods = {
-      handleImagePreview (img) {
+      handleImagePreview (item) {
         wx.previewImage({
-          current: [img], // 当前预览的图片
-          urls: [img] // 所有要预览的图片
+          current: [item], // 当前预览的图片
+          urls: this.detail.imgs // 所有要预览的图片
         })
       }
     }

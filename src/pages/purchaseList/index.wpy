@@ -1,0 +1,146 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellList">
+    
+    <search></search>
+
+    <view class="sellList-wrap">
+
+      <view class="sellList-wrap__tabs proxy-flex is-align-middle font-size--30">
+        <!-- <view class="tab-plane" @tap.stop="hanldeToTab">
+          <text class="tab-plane__label">更新时间</text>
+          <text class="arrow-box">
+            <text class="arrow-box__up arrow {{ order === 'desc' ? 'active' : '' }}"></text>
+            <text class="arrow-box__down arrow {{ order === 'asc' ? 'active' : '' }}"></text>
+          </text>
+        </view> -->
+        <!-- <view class="tab-plane">
+          <picker bindchange="bindPickerChange" value="{{index}}" range="{{stockType}}">
+            <view class="tab-plane__item proxy-flex is-align-middle">
+              <text class="tab-plane__label">{{stockType[index]}}</text>
+              <text class="arrow-box">
+                <text class="arrow-box__up arrow"></text>
+                <text class="arrow-box__down arrow"></text>
+              </text>
+            </view>
+          </picker>
+        </view> -->
+        <view class="tab-plane {{ currentIndex === index ? 'active' : ''}}" wx:for="{{stockType}}" @tap.stop="bindPickerChange({{index}})" wx:key="index">{{ item }}</view>
+      </view>
+
+      <view class="table">
+        <view class="table-tr table-thead proxy-flex is-align-middle">
+          <view class="table-tr__col table-thead__th">单号</view>
+          <view class="table-tr__col table-thead__th">商品种类</view>
+          <view class="table-tr__col table-thead__th">实付金额</view>
+        </view>
+        <block wx:if="{{tableData.length}}">
+          <navigator url="/pages/purchaseDetail/index?id={{item.orderId}}" wx:for="{{tableData}}" wx:key="index" class="table-tr proxy-flex is-align-middle font-size--24">
+            <view class="table-tr__col table-thead__td">{{ item.stockSn }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.categoryNum }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.price }}</view>
+          </navigator>
+        </block>
+        <view class="font-size--26 table-empty" wx:else>暂无相关数据</view>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Search from '../../components/search'
+  import stockApis from '../../api/stock'
+  export default class PurchaseList extends wepy.page {
+    config = {
+      navigationBarTitleText: '进销列表'
+    }
+    components = {
+      search: Search
+    }
+    data = {
+      page: 1,
+      limit: 20,
+      tableData: [],
+      hasMoreData: false,
+      consignee: '',
+      stockType: ['入库单', '出货单'],
+      currentIndex: 0 // 0 进货 1 出货
+    }
+    async getList () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        let { page, limit, tableData, consignee, currentIndex } = this
+        const opts = {
+          page,
+          limit,
+          sort: 'add_time'
+        }
+        if (consignee) {
+          opts.consignee = consignee
+        }
+        let res
+        if (+currentIndex === 0) {
+          res = await stockApis.inList(opts)
+        } else if (+currentIndex === 1) {
+          res = await stockApis.outList(opts)
+        }
+        let { data } = res
+        if (page === 1) {
+          tableData = []
+        }
+        this.tableData = tableData.concat(data.items)
+        if (data.items.length < limit) {
+          this.hasMoreData = false
+        } else {
+          this.hasMoreData = true
+          this.page ++
+        }
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    events = {
+      handleToSearch (val) {
+        this.consignee = val
+        this.page = 1
+        this.getList()
+      },
+      handleEmptySearch () {
+        this.consignee = ''
+      }
+    }
+    onLoad () {
+      this.getList()
+    }
+    onReachBottom () {
+      if (this.hasMoreData) {
+        this.getList()
+      }
+    }
+    methods = {
+      bindPickerChange (index) {
+        this.currentIndex = index
+        this.page = 1
+        this.tableData = []
+        this.getList()
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/purchaseList/index.postcss';
+</style>

@@ -1,11 +1,11 @@
 
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-withdraw">
-    <!-- <view class="withdraw-header">
+    <view class="withdraw-header">
       <view class="font-size--32">钱包金额</view>
-      <view class="value">900</view>
+      <view class="value">{{ amount }}</view>
       <navigator url="/pages/wallet/index" class="withdraw-btn font-size--32 proxy-flex is-align-middle is-justify-center">钱包</navigator>
-    </view> -->
+    </view>
 
     <view class="withdraw-content">
       <block wx:if="{{list.length}}">
@@ -19,7 +19,9 @@
         </view>
       </block>
 
-      <view class="font-size--26 empty-box" wx:else>暂无相关数据~</view>
+      <view class="font-size--26 empty-box" wx:else>
+        <button type="default" bindtap="handleApplyShop">申请自提门店</button>
+      </view>
     </view>
   </view>
 </template>
@@ -28,9 +30,11 @@
   import wepy from 'wepy'
   import storeApis from '../../api/store'
   import wxutils from '../../utils/wxutils'
-  export default class SilderNav extends wepy.page {
+  import walletApis from '../../api/wallet'
+  import messageApis from '../../api/message'
+  export default class Person extends wepy.page {
     config = {
-      navigationBarTitleText: '我的门店',
+      navigationBarTitleText: '我的资源',
       usingComponents: {
         'proxy-elip': '../../packages/elip/index'
       }
@@ -39,7 +43,25 @@
       page: 1,
       limit: 20,
       list: [],
-      hasMoreData: false
+      hasMoreData: false,
+      isFirst: false,
+      amount: ''
+    }
+    async walletBalance () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await walletApis.walletBalance()
+        this.amount = data
+        this.isFirst = true
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
     }
     async storeList () {
       try {
@@ -77,8 +99,26 @@
     }
     onLoad () {
       this.storeList()
+      this.walletBalance()
     }
     methods = {
+      async handleApplyShop () {
+        try {
+          wx.showLoading({
+            title: '加载中',
+            mask: true
+          })
+          await messageApis.apply()
+          // wx.showToast({
+          //   title: '图片上传失败'
+          // })
+          // this.$apply()
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      },
       handleProxyDetail (item) {
         wx.setStorage({
           key: 'proxyDetail',
@@ -94,6 +134,9 @@
     onHide () {
     }
     onShow () {
+      if (this.isFirst) {
+        this.walletBalance()
+      }
     }
   }
 </script>

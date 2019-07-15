@@ -7,12 +7,18 @@ export default class wallet extends base {
    * 钱包余额
    */
   static walletBalance (opts) {
-    return this.post(`wallet/balance`, opts)
+    return this.get(`wallet/balance`, opts)
   }
   /**
-   * 钱包充值
+   * 钱包余额
    */
-  static walletRechargePrepay (opts) {
-    return this.post(`wallet/rechargePrepay`, opts)
+  static walletList (opts) {
+    return this.get(`wallet/list`, opts)
+  }
+  /**
+   * 钱包提现
+   */
+  static withdraw (opts) {
+    return this.post(`wallet/withdraw`, opts)
   }
 }

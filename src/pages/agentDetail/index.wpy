@@ -1,0 +1,78 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-sellList">
+
+    <view class="sellList-wrap">
+
+      <view class="table">
+        <view class="table-tr table-thead proxy-flex is-align-middle">
+          <view class="table-tr__col table-thead__th">代理商</view>
+          <view class="table-tr__col table-thead__th">加入时间</view>
+          <view class="table-tr__col table-thead__th">本月进货额</view>
+          <view class="table-tr__col table-thead__th">总进货额</view>
+        </view>
+        <block wx:if="{{tableData.length}}">
+          <view class="table-tr proxy-flex is-align-middle font-size--24" wx:for="{{tableData}}" wx:key="index" @tap.stop="handleDetail({{item}})">
+            <view class="table-tr__col table-thead__td">{{ item.userName }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.lastTime }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.monthAmount || 0 }}</view>
+            <view class="table-tr__col table-thead__td">{{ item.totalAmount || 0 }}</view>
+          </view>
+        </block>
+        <view class="font-size--26 table-empty" wx:else>暂无相关数据</view>
+      </view>
+
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import Search from '../../components/search'
+  import reportApis from '../../api/report'
+  export default class PerformanceList extends wepy.page {
+    config = {
+      navigationBarTitleText: '代理商详情'
+    }
+    components = {
+      search: Search
+    }
+    data = {
+      adminId: '',
+      tableData: []
+    }
+    async agentDetail () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const opts = {
+          adminId: this.adminId
+        }
+        const { data } = await reportApis.brandinfo(opts)
+        this.tableData = data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        console.log(error)
+        wx.hideLoading()
+      }
+    }
+    onLoad ({adminId}) {
+      this.adminId = adminId
+      this.agentDetail()
+    }
+    methods = {
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/sellList/index.postcss';
+</style>

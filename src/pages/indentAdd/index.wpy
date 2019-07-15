@@ -57,7 +57,7 @@
         </view>
         <view class="product-content proxy-flex is-justify-space-between">
           <proxy-elip line="2" class="name font-size--28">{{ item.name }}</proxy-elip>
-          <view class="font-size--26 font-color-silver-common proxy-mt-30">库存：{{ item.number }}</view>
+          <view class="font-size--26 font-color-silver-common proxy-mt-30">库存：{{ item.isInfinite ? '无限' : item.number }}</view>
           <view class="proxy-flex is-align-bottom is-justify-space-between">
             <view class="font-size--24 unit">{{ item.skuName }}/{{ item.unit }}</view>
             <view>
@@ -146,7 +146,8 @@
         let { page, limit, list, categoryId, order, currentTab, name } = this
         const opts = {
           page,
-          limit
+          limit,
+          sort: 'add_time'
         }
         if (categoryId) {
           opts.categoryId = categoryId
@@ -163,7 +164,7 @@
         }
         let result = []
         data.items.forEach(item => {
-          const { name, unit, picUrl } = item
+          const { name, unit, picUrl, isInfinite } = item
           item.products.forEach(_item => {
             const { specifications, price, number, goodsId, id } = _item
             let dataItem = {
@@ -175,7 +176,8 @@
               number,
               checked: false,
               goodsId,
-              productId: id
+              productId: id,
+              isInfinite
             }
             result.push(dataItem)
           })

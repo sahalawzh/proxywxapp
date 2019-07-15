@@ -10,6 +10,10 @@
         <view class="font-size--34 title">{{ brandInfo.agentName }}</view>
         <view class="font-size--28">{{ brandInfo.levelName }}</view>
       </view>
+      <view @tap.stop="handleToMessageCenter" class="proxy-flex is-align-middle nav-header__message">
+        <view class="font-size--28">待办事项</view>
+        <view class="arrow"></view>
+      </view>
     </navigator>
 
     <view class="nav-list font-size--32">
@@ -53,12 +57,12 @@
         <view class="label">盘点管理</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
       </navigator>
-      <navigator url="" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
+      <navigator url="/pages/performanceList/index" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
         <image class="icon-nav" src="../../images/icon-performance.png" mode="aspectFill"></image>
         <view class="label">业务员业绩报表</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
       </navigator>
-      <navigator url="" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
+      <navigator url="/pages/purchaseList/index" hover-class="none" class="nav-list__item proxy-flex is-align-middle">
         <image class="icon-nav" src="../../images/icon-net.png" mode="aspectFill"></image>
         <view class="label">进销存统计</view>
         <image class="arrow" src="../../images/icon-arrow.png" mode="aspectFill"></image>
@@ -74,6 +78,7 @@
 
 <script>
   import wepy from 'wepy'
+  import wxutils from '../../utils/wxutils'
   export default class Index extends wepy.page {
     config = {
       navigationBarTitleText: '首页'
@@ -86,6 +91,9 @@
       this.brandInfo = brandInfo
     }
     methods = {
+      handleToMessageCenter () {
+        wxutils.backOrNavigate('/pages/messageCenter/index')
+      }
     }
     onUnload () {
     }

@@ -42,7 +42,7 @@
         <view class="item proxy-flex is-align-top">
           <view class="font-size--32 label">资质照片</view>
           <view>
-            <image mode="aspectFill" class="img" wx:for="{{detail.businessLicense}}" wx:key="index" src="../../images/product-test.png"/>
+            <image mode="aspectFill" class="img" wx:for="{{detail.businessLicense}}" @tap.stop="handleImagePreview({{index}})"  wx:key="index" src="{{ item }}"/>
           </view>
         </view>
       </view>
@@ -73,6 +73,12 @@
       })
     }
     methods = {
+      handleImagePreview (idx) {
+        wx.previewImage({
+          current: this.detail.businessLicense[idx], // 当前预览的图片
+          urls: this.detail.businessLicense // 所有要预览的图片
+        })
+      },
       handleToSubmit () {
         // const { name, contacts, mobile, address, status } = this.detail
       },

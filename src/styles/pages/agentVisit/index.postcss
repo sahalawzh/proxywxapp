@@ -32,6 +32,15 @@
         transform: scaleY(0.5);
         background-color: #ededed;
       }
+      .number-value {
+        margin-right: 50rpx;
+      }
+      .arrow {
+        position: absolute;
+        right: 0;
+        width: 34rpx;
+        height: 34rpx;
+      }
       .label {
         color: #333;
       }
@@ -51,12 +60,17 @@
     }
     .upload-label {
       line-height: 1;
+      min-width: 160rpx;
     }
     .icon-upload {
       width: 372rpx;
       height: 242rpx;
-      margin-left: 35rpx;
       margin-bottom: 20rpx;
+    }
+    .icon-cancel {
+      position: absolute;
+      top: -10rpx;
+      right: -10rpx;
     }
   }
   .visit-btn {

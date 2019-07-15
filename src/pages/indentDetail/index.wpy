@@ -2,10 +2,10 @@
 <template lang="wxml" miniapp="wepy">
   <view class="page-contain page-sellOrder">
     <view class="sellOrder-products">
-      <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{ order.orderStatus !== 101 }}">
+      <view class="proxy-flex store-item is-align-middle is-justify-space-between" wx:if="{{ order.orderStatus === 301 || order.orderStatus === 112 || order.orderStatus === 401 }}">
         <view class="font-size--32 label">入库仓库</view>
-        <block wx:if="{{order.orderStatus === 301 || order.orderStatus === 401}}">
-          <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{goods[0].storehouseList}}">
+        <block wx:if="{{order.orderStatus === 301}}">
+          <picker bindchange="bindPickerChange" value="{{storeIndex}}" range-key="name" range="{{storeList}}">
             <view class="font-size--30 item-select proxy-flex is-align-middle">
               <text class="tab-plane__label">{{ storeList[storeIndex].name }}</text>
               <text class="arrow-box">
@@ -70,6 +70,10 @@
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">备注</view>
         <view class="value font-size--28">{{ order.message }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">是否结清</view>
+        <view class="value font-size--28">{{ order.isSettle ? '已结清' : '未结清' }}</view>
       </view>
     </view>
 
@@ -176,8 +180,8 @@
         data.orderGoods.forEach(item => {
           item.sum = accMul(item.price, item.number)
           item.index = 0
-          if (this.order.orderStatus === 301 || this.order.orderStatus === 401) { // 待收货
-            this.storeIndex = data.orderGoods[0].storehouseList.findIndex(_item => _item.id === item.outStockhouseId)
+          if (data.order.orderStatus === 401) { // 待收货
+            this.storeIndex = data.orderGoods[0].storehouseList.findIndex(_item => _item.id === item.stockhouseId)
           }
         })
         this.order = data.order

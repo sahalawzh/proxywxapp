@@ -5,11 +5,8 @@
       <viewl class="sellOrder-products__item proxy-flex" wx:for="{{orderGoods}}" wx:key="index">
         <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
         <view class="product-content">
-          <view class="title">
-            <proxy-elip line="2" class="font-size--28">{{ item.goodsName }}</proxy-elip>
-          </view>
-          <view class="font-size--42 price" wx:if="{{order.isIntegralOrder}}">{{ item.integral }}</view>
-          <view class="font-size--42 price" wx:else><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
+          <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
+          <view class="font-size--42 price">￥{{ item.price }}</view>
           <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
             <view>{{ item.specifications }}</view>
             <view>x{{ item.number }}</view>
@@ -24,66 +21,81 @@
         <view class="value font-size--28">{{ order.orderSn }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">订单{{ order.isIntegralOrder ? '积分' : '金额' }}</view>
-        <view class="value font-size--28">{{ order.isIntegralOrder ? order.requiredIntegral : order.actualPrice }}</view>
+        <view class="label font-size--32">订单金额</view>
+        <view class="value font-size--28">{{ order.actualPrice }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
         <view class="label font-size--32">制单日期</view>
         <view class="value font-size--28">{{ order.addTime }}</view>
       </view>
       <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
-        <view class="label font-size--32">制单人</view>
+        <view class="label font-size--32">收货人</view>
         <view class="value font-size--28">{{ order.consignee }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">联系电话</view>
+        <view class="value font-size--28">{{ order.mobile }}</view>
+      </view>
+      <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="label font-size--32">仓库</view>
+        <view class="value font-size--28">{{ orderGoods[0].storehouseList[storeIndex].name }}</view>
       </view>
     </view>
 
     <view class="sellOrder-info font-size--32">
       <view class="sellOrder-info__item proxy-flex is-align-middle">
         <view>备注:</view>
-        <view class="value">{{ order.comment }}</view>
+        <view class="value">{{ order.message }}</view>
       </view>
-    </view>
-
-    <view class="proxy-mt-30 footer">
-      <button size="mini" @tap.stop="hanldeCancel" class="open-type-btn font-size--30 footer-btn btn-border">取消</button>
-      <button size="mini" @tap.stop="hanldeAffirm" type="warn" class="open-type-btn font-size--30 footer-btn">确认核销</button>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>地址:</view>
+        <view class="value">{{ order.address }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>物流单号:</view>
+        <view class="value">{{ order.shipSn }}</view>
+      </view>
+      <view class="sellOrder-info__item proxy-flex is-align-middle">
+        <view>配送方式:</view>
+        <view class="value">{{ order.shipChannel }}</view>
+      </view>
     </view>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
-  import orderApis from '../../api/order'
-  import wxutils from '../../utils/wxutils'
-  import param from '../../utils/param'
-  export default class VerificationDeatil extends wepy.page {
+  import brandOrderApis from '../../api/brandOrder'
+  export default class PurchaseDetail extends wepy.page {
     config = {
-      navigationBarTitleText: '确认核销',
+      navigationBarTitleText: '进销详情',
       usingComponents: {
         'proxy-elip': '../../packages/elip/index'
       }
     }
     data = {
-      orderSn: '',
-      order: {},
+      id: '',
+      order: '',
       orderGoods: [],
-      user: {}
+      storeIndex: 0
     }
-    async detailBySn () {
+    async getPurchaseDetail () {
       try {
         wx.showLoading({
           title: '加载中',
           mask: true
         })
-        const { orderSn } = this
         const opts = {
-          orderSn
+          id: this.id
         }
-        const { data } = await orderApis.detailBySn(opts)
-        const { order, orderGoods, user } = data
+        const { data } = await brandOrderApis.detail(opts)
+        const { order, orderGoods } = data
+        let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
+          return store.id === data.orderGoods[0].outStockhouseId
+        })
+        this.storeIndex = storeIndex
         this.order = order
         this.orderGoods = orderGoods
-        this.user = user
         this.$apply()
         wx.hideLoading()
       } catch (error) {
@@ -91,35 +103,11 @@
         wx.hideLoading()
       }
     }
-    onLoad ({ orderSn }) {
-      this.orderSn = orderSn
-      this.detailBySn()
+    onLoad ({ id }) {
+      this.id = id
+      this.getPurchaseDetail()
     }
     methods = {
-      async hanldeAffirm () {
-        try {
-          wx.showLoading({
-            title: '核销中',
-            mask: true
-          })
-          const { id } = this.order
-          const opts = {
-            orderId: id
-          }
-          await orderApis.verif(param(opts))
-          wxutils.backOrRedirect('/pages/verificationManage/index')
-          this.$apply()
-          wx.hideLoading()
-        } catch (error) {
-          console.log(error)
-          wx.hideLoading()
-        }
-      },
-      hanldeCancel () {
-        wx.navigateBack({
-          delta: 1
-        })
-      }
     }
     onUnload () {
     }
@@ -130,5 +118,5 @@
   }
 </script>
 <style lang='postcss'>
-  @import 'src/styles/pages/verificationDeatil/index.postcss';
+  @import 'src/styles/pages/sellOrder/index.postcss';
 </style>
