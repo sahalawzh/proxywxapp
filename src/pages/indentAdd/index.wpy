@@ -22,7 +22,7 @@
               </text>
             </view>
           </view> -->
-          <view
+          <!-- <view
             @tap.stop="hanldeToTab({{'price'}})"
             class="goods-list-tabbar__item font-size--28 {{currentTab === 'price' ? 'active' : ''}}">
             <view class="tabbar__cont">
@@ -32,7 +32,7 @@
                 <text class="arrow-box__down {{order === 'asc' ? 'active' : ''}} arrow"></text>
               </text>
             </view>
-          </view>
+          </view> -->
           <view
             @tap.stop="handleToggleFilter"
             class="goods-list-tabbar__item font-size--28">

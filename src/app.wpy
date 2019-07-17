@@ -42,7 +42,8 @@ export default class extends wepy.app {
       'pages/indentPay/index', // 确认订货
       'pages/indentDetail/index', // 订货详情
       'pages/wallet/index', // 钱包
-      'pages/walletUse/index', // 钱包提现或充值
+      'pages/walletUse/index', // 钱包提现
+      'pages/walletRecharge/index', // 钱包充值
       'pages/invite/index', // 邀请
       'pages/inviteCode/index', // 二维码邀请
       'pages/shippingList/index', // 出货列表
@@ -114,9 +115,9 @@ export default class extends wepy.app {
       this.globalData.baseUrl = 'http://47.106.85.244:8080/admin'
     } else {
       if (process.env.TARGET_APP === 'proapp') {
-        this.globalData.baseUrl = ''
+        this.globalData.baseUrl = 'https://shop.wellslube.com/admin'
       } else {
-        this.globalData.baseUrl = 'http://47.106.85.244:8080/admin'
+        this.globalData.baseUrl = 'https://shop.wellslube.com/admin'
       }
     }
     let cacheProxyInfo = wx.getStorageSync('proxy')

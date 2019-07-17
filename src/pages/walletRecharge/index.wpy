@@ -1,0 +1,88 @@
+
+<template lang="wxml" miniapp="wepy">
+  <view class="page-contain page-walletUse">
+    <form bindsubmit="handleRecharge">
+      <view class="walletUse-wrap proxy-ml-30 proxy-mr-30">
+        <view class="font-size--30 title">充值金额</view>
+        <view class="amount proxy-flex is-align-middle">
+          <view class="amount-unit">￥</view>
+          <view>
+            <input type="digit" bindinput="bindKeyInput" name="money" class="amount-price"/>
+          </view>
+        </view>
+        <button class="font-size--32 wallet-btn" type="primary" form-type="submit">充值</button>
+      </view>
+    </form>
+
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import walletApis from '../../api/wallet'
+  import wxutils from '../../utils/wxutils'
+  export default class WalletRecharge extends wepy.page {
+    config = {
+      navigationBarTitleText: '充值'
+    }
+    data = {
+      amount: '',
+      error: false
+    }
+    onLoad () {
+    }
+    methods = {
+      bindKeyInput(e) {
+        this.amount = e.detail.value
+      },
+      async handleRecharge () {
+        try {
+          if (!this.amount) {
+            wx.showToast({
+              title: '还没有输入充值金额',
+              icon: 'none'
+            })
+            return
+          }
+          wx.showLoading({
+            title: '充值中',
+            mask: true
+          })
+          const opts = {
+            money: this.amount
+          }
+          const { data } = await walletApis.prepayRecharge(opts)
+          const { appId, timeStamp, nonceStr, packageValue, paySign } = data
+          const payOpts = {
+            appId,
+            timeStamp,
+            nonceStr,
+            signType: 'MD5',
+            paySign,
+            package: packageValue
+          }
+          wxutils.wxPay(payOpts).then(res => {
+            wepy.navigateBack({
+              delta: 1
+            })
+          }).catch((e) => {
+            console.log(e)
+          })
+          wx.hideLoading()
+        } catch (error) {
+          console.log(error)
+          wx.hideLoading()
+        }
+      }
+    }
+    onUnload () {
+    }
+    onHide () {
+    }
+    onShow () {
+    }
+  }
+</script>
+<style lang='postcss'>
+  @import 'src/styles/pages/walletUse/index.postcss';
+</style>

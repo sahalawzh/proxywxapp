@@ -7,7 +7,7 @@
         <view class="amount proxy-flex is-align-middle">
           <view class="amount-unit">￥</view>
           <view>
-            <input type="number" bindinput="bindKeyInput" name="money" class="amount-price"/>
+            <input type="digit" bindinput="bindKeyInput" name="money" class="amount-price"/>
           </view>
         </view>
         <view class="font-size--24 tip" wx:if="{{!error}}">当前可提现余额{{ amount }}元</view>
@@ -42,7 +42,7 @@
   import walletApis from '../../api/wallet'
   export default class WalletUse extends wepy.page {
     config = {
-      navigationBarTitleText: ''
+      navigationBarTitleText: '提现'
     }
     data = {
       amount: '',

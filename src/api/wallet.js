@@ -21,4 +21,10 @@ export default class wallet extends base {
   static withdraw (opts) {
     return this.post(`wallet/withdraw`, opts)
   }
+  /**
+   * 钱包充值
+   */
+  static prepayRecharge (opts) {
+    return this.post(`wallet/prepayRecharge`, opts)
+  }
 }

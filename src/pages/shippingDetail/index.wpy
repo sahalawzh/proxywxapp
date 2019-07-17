@@ -24,11 +24,11 @@
             <view class="product-content">
               <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
               <view class="font-size--42 price"><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
-              <view class="font-size--24" wx:if="{{ order.orderStatus === 101 }}">库存：{{ item.stock }}</view>
+              <view class="font-size--24" wx:if="{{ order.orderStatus === 101 }}">库存：{{ item.isInfinite ? '无限' : item.stock }}</view>
               <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
                 <view>{{ item.specifications }}</view>
                 <block wx:if="{{ order.orderStatus == 101 }}">
-                  <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabled}}" max="{{ item.stock }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
+                  <proxy-stepper width="48rpx" height="46rpx" disabled="{{disabled}}" max="{{ item.isInfinite ? maxStock : item.stock }}" data-index="{{index}}" value="{{ item.number }}" @changenumber.stop="changeQty"></proxy-stepper>
                 </block>
                 <view wx:else>×{{item.number}}</view>
               </view>
@@ -76,7 +76,7 @@
           <input wx:if="{{btnText}}" bindblur="hanldeBlurMessage" class="font-size--28 value proxy-ta-r" name="message" value="{{ order.message }}" placeholder-class="placeholder" placeholder="请输入备注">
           <view wx:else class="value font-size--28">{{ order.message }}</view>
         </view>
-        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between">
+        <view class="sellOrder-list__item proxy-flex is-align-middle is-justify-space-between" wx:if="{{ order.orderStatus !== 101 }}">
           <view class="label font-size--32">是否结清</view>
           <switch checked="{{order.isSettle}}" bindchange="switchChange"/>
         </view>
@@ -132,7 +132,8 @@
         112: '审核不通过',
         401: '已收货'
       },
-      storeIndex: 0
+      storeIndex: 0,
+      maxStock: 999999999
     }
     computed = {
       isShowStore () {
@@ -185,8 +186,13 @@
           id: this.id
         }
         const { data } = await brandOrderApis.detail(opts)
+        let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
+          return store.id === data.orderGoods[0].outStockhouseId
+        })
+        this.storeIndex = storeIndex === -1 ? 0 : storeIndex
         data.orderGoods.forEach(item => {
           item.sum = accMul(item.price, item.number)
+          item.outStockhouseId = data.orderGoods[0].storehouseList[this.storeIndex].id
           if (data.order.orderStatus === 101) {
             let sum = 0
             item.storehouseList.forEach(_item => {
@@ -194,12 +200,7 @@
             })
             item.stock = sum
           }
-          // item.outStockhouseId = data.orderGoods[0].storehouseList[this.storeIndex].id
         })
-        let storeIndex = data.orderGoods[0].storehouseList.findIndex(function (store) {
-          return store.id === data.orderGoods[0].outStockhouseId
-        })
-        this.storeIndex = storeIndex === -1 ? 0 : storeIndex
         this.order = data.order
         this.goods = data.orderGoods
         this.$apply()

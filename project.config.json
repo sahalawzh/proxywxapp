@@ -21,7 +21,7 @@
 		}
 	},
 	"compileType": "miniprogram",
-	"libVersion": "2.7.3",
+	"libVersion": "2.7.5",
 	"appid": "wx682346fa5b40baf8",
 	"projectname": "proxywxapp",
 	"miniprogramRoot": "dist/",
@@ -46,7 +46,7 @@
 			"list": []
 		},
 		"miniprogram": {
-			"current": 7,
+			"current": 21,
 			"list": [
 				{
 					"id": 0,
@@ -196,10 +196,10 @@
 					"scene": null
 				},
 				{
-					"id": 18,
+					"id": 21,
 					"name": "出货详情",
 					"pathName": "pages/shippingDetail/index",
-					"query": "id=19",
+					"query": "id=8",
 					"scene": null
 				},
 				{

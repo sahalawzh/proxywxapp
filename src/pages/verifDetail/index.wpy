@@ -6,7 +6,7 @@
         <image mode="aspectFill" class="product-img" src="{{ item.picUrl }}"></image>
         <view class="product-content">
           <proxy-elip line="2" class="font-size--28 title">{{ item.goodsName }}</proxy-elip>
-          <view class="font-size--42 price">{{ order.isIntegralOrder ? item.integral : '￥' + item.price }}</view>
+          <view class="font-size--42 price">{{ order.isIntegralOrder ? item.integral + '积分' : '￥' + item.price }}</view>
           <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
             <view>{{ item.specifications }}</view>
             <view>x{{ item.number }}</view>

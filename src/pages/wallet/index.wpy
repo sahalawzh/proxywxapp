@@ -5,10 +5,12 @@
     <view class="wallet-content proxy-flex is-align-middle">
       <image mode="aspectFill" class="icon-qian" src="../../images/icon-qian.png"/>
       <view class="wallet-content__price"><text class="font-size--48 unit">￥</text>{{ amount }}</view>
-      <navigator url="/pages/walletUse/index" hover-class="none">
-        <button class="font-size--32 wallet-btn wallet-btn__recharge" type="primary">提现</button>
+      <navigator url="/pages/walletRecharge/index" hover-class="none">
+        <button class="font-size--32 open-type-btn wallet-btn wallet-btn__recharge font-color-white">充值</button>
       </navigator>
-      <!-- <button class="font-size--32 open-type-btn wallet-btn wallet-btn__withdraw">提现</button> -->
+      <navigator url="/pages/walletUse/index" hover-class="none">
+        <button class="font-size--32 wallet-btn wallet-btn__withdraw" type="primary">提现</button>
+      </navigator>
     </view>
   </view>
 </template>

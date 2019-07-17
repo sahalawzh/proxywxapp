@@ -8,7 +8,7 @@
           <view class="title">
             <proxy-elip line="2" class="font-size--28">{{ item.goodsName }}</proxy-elip>
           </view>
-          <view class="font-size--42 price" wx:if="{{order.isIntegralOrder}}">{{ item.integral }}</view>
+          <view class="font-size--42 price" wx:if="{{order.isIntegralOrder}}">{{ item.integral }}积分</view>
           <view class="font-size--42 price" wx:else><text class="font-size--30 unit">￥</text>{{ item.price }}</view>
           <view class="proxy-flex is-align-middle is-justify-space-between font-size--24">
             <view>{{ item.specifications }}</view>
