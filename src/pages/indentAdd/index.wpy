@@ -9,7 +9,7 @@
             @tap.stop="hanldeToTab({{'synthetical'}})"
             class="goods-list-tabbar__item font-size--28 {{currentTab === 'synthetical' ? 'active' : ''}}">
             <view class="tabbar__cont">
-              <text class="tabbar__label">综合</text>
+              <text class="tabbar__label">刷新</text>
             </view>
           </view>
           <!-- <view 

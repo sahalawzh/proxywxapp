@@ -8,7 +8,7 @@
 
       <view class="sellList-wrap__tabs proxy-flex is-align-middle font-size--30">
         <view class="tab-plane" @tap.stop="hanldeToTab">
-          <text class="tab-plane__label">更新时间</text>
+          <text class="tab-plane__label">仓库筛选</text>
           <text class="arrow-box">
             <text class="arrow-box__up arrow {{ order === 'desc' ? 'active' : '' }}"></text>
             <text class="arrow-box__down arrow {{ order === 'asc' ? 'active' : '' }}"></text>

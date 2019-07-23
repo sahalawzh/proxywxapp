@@ -21,4 +21,10 @@ export default class message extends base {
   static apply (opts) {
     return this.get(`message/apply`, opts)
   }
+  /**
+   * 消息未读条数
+   */
+  static count (opts) {
+    return this.get(`message/count`, opts)
+  }
 }

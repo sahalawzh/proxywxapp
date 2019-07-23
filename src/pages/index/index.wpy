@@ -12,6 +12,7 @@
       </view>
       <view @tap.stop="handleToMessageCenter" class="proxy-flex is-align-middle nav-header__message">
         <view class="font-size--28">待办事项</view>
+        <view class="badge font-size--24" wx:if="{{ count }}">{{ count }}</view>
         <view class="arrow"></view>
       </view>
     </navigator>
@@ -79,16 +80,36 @@
 <script>
   import wepy from 'wepy'
   import wxutils from '../../utils/wxutils'
+  import messageApis from '../../api/message'
   export default class Index extends wepy.page {
     config = {
       navigationBarTitleText: '首页'
     }
     data = {
-      brandInfo: ''
+      brandInfo: '',
+      isFirst: false,
+      count: 0
+    }
+    async getMessageCount () {
+      try {
+        wx.showLoading({
+          title: '加载中',
+          mask: true
+        })
+        const { data } = await messageApis.count()
+        this.isFirst = true
+        this.count = data
+        this.$apply()
+        wx.hideLoading()
+      } catch (error) {
+        wx.hideLoading()
+        console.log(error)
+      }
     }
     onLoad () {
       const { brandInfo } = wepy.$instance.globalData
       this.brandInfo = brandInfo
+      this.getMessageCount()
     }
     methods = {
       handleToMessageCenter () {
@@ -100,6 +121,9 @@
     onHide () {
     }
     onShow () {
+      if (this.isFirst) {
+        this.getMessageCount()
+      }
     }
   }
 </script>

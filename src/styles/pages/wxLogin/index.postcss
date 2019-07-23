@@ -1,18 +1,22 @@
 .page-login {
+  padding-top: 100rpx;
+  text-align: center;
+  .authorize {
+    width: 240rpx;
+    height: 240rpx;
+    display: block;
+    margin: 0 auto;
+    padding-bottom: 60rpx;
+
+  }
+  .auth-item {
+    padding: 5rpx 0;
+  }
   .login-box {
     position: relative;
     padding: 46rpx 50rpx 0;
-    &::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 20rpx;
-      width: 100%;
-      background-color: #F3F4F5;
-    }
     button {
-      background:rgba(6,192,98,1);
+      background-color:#179B16;
     }
   }
 }

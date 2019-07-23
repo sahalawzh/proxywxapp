@@ -111,8 +111,8 @@ export default class extends wepy.app {
         console.log('app', wx.imageQuality)
       }
     })
-    if (process.env.NODE_ENV === 'development') {
-      this.globalData.baseUrl = 'http://47.106.85.244:8080/admin'
+    if (process.env.NODE_ENV === 'development') { // http://47.106.85.244:8080/admin
+      this.globalData.baseUrl = 'https://shop.wellslube.com/admin'
     } else {
       if (process.env.TARGET_APP === 'proapp') {
         this.globalData.baseUrl = 'https://shop.wellslube.com/admin'

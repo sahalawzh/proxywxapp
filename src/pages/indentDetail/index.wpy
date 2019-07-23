@@ -160,6 +160,11 @@
         if (this.order.orderStatus === 401) { // 已收货
           this.storeIndex = data.findIndex(item => item.id === this.goods[0].stockhouseId)
         }
+        if (this.order.orderStatus === 301) {
+          this.goods.forEach(item => {
+            item.stockhouseId = this.storeList[this.storeIndex].id
+          })
+        }
         this.$apply()
         wx.hideLoading()
       } catch (error) {

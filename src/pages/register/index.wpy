@@ -129,8 +129,6 @@
 <script>
   import wepy from 'wepy'
   import brandApis from '../../api/brand'
-  // import wxutils from '../../utils/wxutils'
-  import { parseQueryString } from '../../utils/utils'
   import adminApis from '../../api/admin'
   export default class register extends wepy.page {
     config = {
@@ -170,11 +168,10 @@
     }
     onLoad (options) {
       if (options.scene) {
-        let sceneObj = decodeURIComponent(options.scene)
-        let urlObj = 'url?' + sceneObj
-        options = parseQueryString(urlObj)
+        let sceneVal = decodeURIComponent(options.scene)
+        sceneVal = sceneVal.split(',')[1]
+        options.code = sceneVal
       }
-      console.log(options.code)
       if (options.code) {
         this.getInviteCode(options.code)
       }
